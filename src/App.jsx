@@ -5,6 +5,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 
 function App() {
+  const [isLogin, setLogin] = useState(false);
   const [count, setCount] = useState(0);
   const baseUrl = 'https://ec-course-api.hexschool.io';
   const api = 'yameow2024';
@@ -20,33 +21,41 @@ function App() {
   getData();
 
   return (
-    <>
-      <div className='container'>
-        <div className="row">
-          <div className="col-md-8">
-            <a href="https://vite.dev" target="_blank">
-              <img src={viteLogo} className="logo" alt="Vite logo" />
-            </a>
-            <a href="https://react.dev" target="_blank">
-              <img src={reactLogo} className="logo react" alt="React logo" />
-            </a>
-            <h1>Vite + React</h1>
-            <div className="card">
-              <button className='btn btn-warning' onClick={() => setCount((count) => count + 1)}>
-                count is {count}
-              </button>
-              <p>
-                Edit <code>src/App.jsx</code> and save to test HMR
-              </p>
-            </div>
-            <p className="read-the-docs">
-              Click on the Vite and React logos to learn more
-            </p>
+    <div className='container'>
+      {isLogin ? (
+        <p>後台頁面</p>
+      ) :
+        (
+          <div className="loginPhase">
+            <div className="row">
+              <div className="col-md-6 col-lg-8">
+                <form className='card'>
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <div className="form-floating">
+                        <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" />
+                        <label htmlFor="floatingInput">Email</label>
+                      </div>
+                    </div>
 
+                    <div className="mb-3">
+                      <div className="form-floating">
+                        <input type="password" className="form-control" id="floatingPassword" placeholder="Password" />
+                        <label htmlFor="floatingPassword">Password</label>
+                      </div>
+                    </div>
+                    <div className="d-flex mb-3">
+                      <button className='btn btn-primary mx-auto'>登入</button>
+                    </div>
+                    <p className="text-center text-secondary">HexSchool</p>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </>
+        )
+      }
+    </div>
   )
 }
 
