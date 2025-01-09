@@ -1,0 +1,11 @@
+.singleProduct {
+  img {
+    object-fit: contain;
+    max-width: 100%;
+  }
+
+  .otherImages {
+    height: 150px;
+    margin-right: 5px; /* 加點邊距 */
+  }
+}
