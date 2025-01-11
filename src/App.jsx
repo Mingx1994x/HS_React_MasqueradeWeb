@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios';
 
 function App() {
@@ -13,31 +13,46 @@ function App() {
   const [products, setProducts] = useState([]);
   const [tempProduct, setTempProduct] = useState(null);
 
-  const getData = async () => {
+  const getProductsData = async () => {
     try {
-      const res = await axios.get(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/products/all`);
-      setProducts([
-        ...products,
-        ...res.data.products
-      ]);
+      const res = await axios.get(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/products/all`);
+      setProducts(Object.values(res.data.products));
     } catch (error) {
-      alert(error.response.data.message)
+      alert(`${error.response.data.message}\n煩請洽管理人員`);
     }
   }
 
+  const initProductsData = () => {
+    setProducts(null);
+    setTempProduct(null);
+  }
+
   const signin = async () => {
-    if (!account) return
+    if (!account.username || !account.password) return
     try {
       const res = await axios.post(`${VITE_APP_BaseUrl}/v2/admin/signin`, account)
-      // console.log(res);
+      document.cookie = `HexToken=${res.data.token}; expires=${new Date(res.data.expired)}`;
+      axios.defaults.headers.common['Authorization'] = res.data.token;
       setAccount({
         username: '',
         password: ''
       })
+      getProductsData()
       setIsLogin(true);
-      getData();
+
     } catch (error) {
-      alert(error.response.data.message)
+      alert(error.response.data.error.message)
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await axios.post(`${VITE_APP_BaseUrl}/v2/logout`);
+      document.cookie = "HexToken='';"
+      setIsLogin(false);
+      initProductsData();
+    } catch (error) {
+      alert(`${error.response.data.message}\n煩請洽管理人員`)
     }
   }
 
@@ -48,12 +63,19 @@ function App() {
     })
   }
 
+
+
   return (
     <div className='container'>
       {isLogin ? (
         <div className="row mt-5">
           <div className="col-md-6">
-            <h2>產品列表</h2>
+            <div className="d-flex mb-3">
+              <h2>產品列表</h2>
+              <div className="d-flex ms-auto">
+                <button type="button" className='btn btn-danger me-2' onClick={logout}>登出</button>
+              </div>
+            </div>
             <table className="table">
               <thead>
                 <tr className='table-secondary'>
