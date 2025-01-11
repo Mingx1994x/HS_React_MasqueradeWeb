@@ -18,7 +18,7 @@ function App() {
       const res = await axios.get(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/products/all`);
       setProducts(Object.values(res.data.products));
     } catch (error) {
-      alert(`${error.response.data.message}\n煩請洽管理人員`);
+      alert(error?.response.data.message ? `${error?.response.data.message}\n煩請洽管理人員` : "系統忙線中，請洽管理人員");
     }
   }
 
@@ -45,6 +45,13 @@ function App() {
     }
   }
 
+  const inputHandler = (name, value) => {
+    setAccount({
+      ...account,
+      [name]: value
+    })
+  }
+
   const logout = async () => {
     try {
       await axios.post(`${VITE_APP_BaseUrl}/v2/logout`);
@@ -56,14 +63,20 @@ function App() {
     }
   }
 
-  const inputHandler = (name, value) => {
-    setAccount({
-      ...account,
-      [name]: value
-    })
+  const checkStatus = async () => {
+    let hexToken = document.cookie.replace(/(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/, "$1",);
+    try {
+      await axios.post(`${VITE_APP_BaseUrl}/v2/api/user/check`, {}, {
+        headers: {
+          authorization: hexToken
+        }
+      });
+      alert('目前已登入了唷！')
+    } catch (error) {
+      alert("系統忙碌中，請重新登入");
+      logout();
+    }
   }
-
-
 
   return (
     <div className='container'>
@@ -73,6 +86,7 @@ function App() {
             <div className="d-flex mb-3">
               <h2>產品列表</h2>
               <div className="d-flex ms-auto">
+                <button type="button" className='btn btn-success me-2' onClick={checkStatus}>登入狀態</button>
                 <button type="button" className='btn btn-danger me-2' onClick={logout}>登出</button>
               </div>
             </div>
