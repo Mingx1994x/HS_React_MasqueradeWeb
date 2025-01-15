@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios';
 
-function App() {
+import Login from './LoginPage';
+
+function AppW2() {
   const [isLogin, setIsLogin] = useState(false);
   const [account, setAccount] = useState(
     {
@@ -9,6 +11,7 @@ function App() {
       password: ""
     }
   );
+  const [isLoading, setIsLoading] = useState(false);
   const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
   const [products, setProducts] = useState([]);
   const [tempProduct, setTempProduct] = useState(null);
@@ -45,7 +48,8 @@ function App() {
     }
   }
 
-  const inputHandler = (name, value) => {
+  const inputHandler = (e) => {
+    const { name, value } = e.target;
     setAccount({
       ...account,
       [name]: value
@@ -53,9 +57,11 @@ function App() {
   }
 
   const logout = async () => {
+    setIsLoading(true);
     try {
       await axios.post(`${VITE_APP_BaseUrl}/v2/logout`);
       document.cookie = "HexToken='';"
+      setIsLoading(false);
       setIsLogin(false);
       initProductsData();
     } catch (error) {
@@ -64,6 +70,7 @@ function App() {
   }
 
   const checkStatus = async () => {
+    setIsLoading(true);
     let hexToken = document.cookie.replace(/(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/, "$1",);
     try {
       await axios.post(`${VITE_APP_BaseUrl}/v2/api/user/check`, {}, {
@@ -71,6 +78,7 @@ function App() {
           authorization: hexToken
         }
       });
+      setIsLoading(false);
       alert('目前已登入了唷！')
     } catch (error) {
       alert("系統忙碌中，請重新登入");
@@ -86,8 +94,8 @@ function App() {
             <div className="d-flex mb-3">
               <h2>產品列表</h2>
               <div className="d-flex ms-auto">
-                <button type="button" className='btn btn-success me-2' onClick={checkStatus}>登入狀態</button>
-                <button type="button" className='btn btn-danger me-2' onClick={logout}>登出</button>
+                <button type="button" className='btn btn-success me-2' onClick={checkStatus} disabled={isLoading}>登入狀態</button>
+                <button type="button" className='btn btn-danger me-2' onClick={logout} disabled={isLoading}>登出</button>
               </div>
             </div>
             <table className="table">
@@ -150,48 +158,11 @@ function App() {
         </div>
       ) :
         (
-          <div className="loginPhase">
-            <div className="row">
-              <div className="col-md-6 col-lg-8">
-                <form className='card' onSubmit={(e) => {
-                  e.preventDefault();
-                  signin()
-                }}>
-                  <div className="card-body">
-                    <div className="mb-3">
-                      <div className="form-floating">
-                        <input type="email" name='username' className="form-control" id="floatingInput"
-                          value={account?.username}
-                          placeholder="name@example.com" onChange={(e) => {
-                            inputHandler(e.target.name, e.target.value)
-                          }} />
-                        <label htmlFor="floatingInput">Email</label>
-                      </div>
-                    </div>
-
-                    <div className="mb-3">
-                      <div className="form-floating">
-                        <input type="password" name='password' className="form-control" id="floatingPassword"
-                          value={account?.password}
-                          placeholder="Password" onChange={(e) => {
-                            inputHandler(e.target.name, e.target.value)
-                          }} />
-                        <label htmlFor="floatingPassword">Password</label>
-                      </div>
-                    </div>
-                    <div className="d-flex mb-3">
-                      <button className='btn btn-primary mx-auto'>登入</button>
-                    </div>
-                    <p className="text-center text-secondary">&copy; 2025~∞ - 六角學院</p>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+          <Login account={account} login={signin} inputHandler={inputHandler} />
         )
       }
     </div>
   )
 }
 
-export default App
+export default AppW2
