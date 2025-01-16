@@ -170,6 +170,40 @@ function AppW3() {
 		}
 	}
 
+	const handleProductImages = (index, value) => {
+		let othersImages = [...tempData.imagesUrl];
+		othersImages[index] = value;
+		setTempData({
+			...tempData,
+			imagesUrl: [...othersImages]
+		})
+
+	}
+	const addProductImage = () => {
+		let othersImages = [...tempData.imagesUrl];
+		othersImages.push('');
+		setTempData({
+			...tempData,
+			imagesUrl: [...othersImages]
+		})
+	}
+
+	const removeProductImage = (mode, index = null) => {
+		if (mode === 'main') {
+			setTempData({
+				...tempData,
+				imageUrl: ''
+			})
+		} else {
+			let othersImages = [...tempData.imagesUrl];
+			othersImages.splice(index, 1);
+			setTempData({
+				...tempData,
+				imagesUrl: [...othersImages]
+			})
+		}
+	}
+
 	const manageProduct = async (data, mode) => {
 		const { title, category, unit, price, origin_price } = data;
 		if (!title || !category || !unit || !price || !origin_price) {
@@ -321,45 +355,64 @@ function AppW3() {
 								</div>
 								<div className="col-4">
 									<div className="row mb-3">
+										<div className="col-12 d-flex flex-column mb-2">
+											<p className="fs-5">主圖</p>
+											<img src={tempData.imageUrl} alt="主圖" className='img-fluid' />
+										</div>
 										<label htmlFor="productImageUrl" className='col-12'>新增主圖網址</label>
-										<div className="col-12">
+										<div className="col-12 mb-2">
 											<input className="form-control" id="productImageUrl" placeholder='請輸入圖片網址' name='imageUrl' value={tempData.imageUrl} onChange={handleProductInput} />
 										</div>
-										<div className="col-12 d-flex flex-column">
-											<p className="fs-5">主圖</p>
-											<img src={tempData.imageUrl} alt="主圖" className='img-fluid mb-2' />
-										</div>
-										<div className={tempData.imageUrl ? 'col d-flex flex-column d-none' : 'col d-flex flex-column'}>
-											<button type="button" className='btn btn-outline-primary' >新增圖片</button>
-										</div>
-										<div className={tempData.imageUrl ? 'col d-flex flex-column' : 'col d-flex flex-column d-none'}>
-											<button type="button" className='btn btn-outline-danger'>移除圖片</button>
-										</div>
+										{tempData.imageUrl ? (
+											<>
+												<div className={tempData.imagesUrl.length > 0 ? 'col-6 d-flex flex-column d-none' : 'col-6 d-flex flex-column'}>
+													<button type="button" className='btn btn-outline-primary' onClick={addProductImage}>新增圖片</button>
+												</div>
+												<div className={tempData.imagesUrl.length > 0 ? 'col-12 d-flex flex-column' : 'col-6 d-flex flex-column'}>
+													<button type="button" className='btn btn-outline-danger' onClick={() => {
+														removeProductImage("main")
+													}}>移除圖片</button>
+												</div>
+											</>
+										) : (
+											<div className='col-12 d-flex flex-column'>
+												<button type="button" className='btn btn-outline-primary' onClick={addProductImage}>新增圖片</button>
+											</div>
+										)}
 									</div>
 									{tempData.imagesUrl?.map((image, index) => (
-										<div className="row mb-3" key={image}>
-											<div className="col-12 d-flex flex-column">
+										<div className="row mb-3" key={`${image}/${index}`}>
+											<div className="col-12 d-flex flex-column mb-2">
 												<p className="fs-5">{`副圖${index + 1}`}</p>
-												<img src={image} alt={`副圖${index + 1}`} className='img-fluid mb-2' />
+												<img src={image} alt={`副圖${index + 1}`} className='img-fluid' />
+											</div>
+											<label htmlFor="productImageUrl" className='col-12'>新增副圖網址</label>
+											<div className="col-12 mb-2">
+												<input className="form-control" id="productImageUrl" placeholder='請輸入圖片網址' value={image} onChange={(e) => {
+													handleProductImages(index, e.target.value)
+												}} />
 											</div>
 											{index !== tempData.imagesUrl.length - 1 || index === 4 ? (
 												<div className='col d-flex flex-column'>
-													<button type="button" className='btn btn-outline-danger'>移除圖片</button>
+													<button type="button" className='btn btn-outline-danger' onClick={() => {
+														removeProductImage('others', index)
+													}}>移除圖片</button>
 												</div>
 											) : (
 												<>
 													<div className='col-6 d-flex flex-column'>
-														<button type="button" className='btn btn-outline-primary'>新增圖片</button>
+														<button type="button" className='btn btn-outline-primary' onClick={addProductImage}>新增圖片</button>
 													</div>
 													<div className="col-6 d-flex flex-column">
-														<button type="button" className='btn btn-outline-danger'>移除圖片</button>
+														<button type="button" className='btn btn-outline-danger' onClick={() => {
+															removeProductImage('others', index)
+														}}>移除圖片</button>
 													</div>
 												</>
 											)}
 										</div>)
 									)
 									}
-									{ }
 								</div>
 							</div>
 						</div>
