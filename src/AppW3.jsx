@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios';
+import { Modal } from 'bootstrap';
 
 import Login from './LoginPage';
 import Loading from './LoadingPage';
@@ -14,6 +15,21 @@ function AppW3() {
 	);
 	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 	const [products, setProducts] = useState([]);
+	let defaultData = {
+		category: '',
+		content: '',
+		description: '',
+		id: '',
+		is_enabled: '',
+		origin_price: '',
+		price: '',
+		title: '',
+		unit: '',
+		num: '',
+		imageUrl: '',
+		imagesUrl: []
+	}
+	const [tempData, setTempData] = useState(defaultData);
 
 	const getProductsData = async () => {
 		try {
@@ -26,6 +42,7 @@ function AppW3() {
 
 	const initProductsData = () => {
 		setProducts(null);
+		setTempData(defaultData);
 	}
 
 	const signin = async () => {
@@ -79,13 +96,87 @@ function AppW3() {
 		checkStatus()
 	}, []);
 
+	const productModalRef = useRef(null);
+	const deleteModalRef = useRef(null);
+	useEffect(() => {
+		new Modal(productModalRef.current, {
+			backdrop: 'static'
+		});
+		new Modal(deleteModalRef.current, {
+			backdrop: 'static'
+		});
+	}, [])
+	const [functionMode, setFunctionMode] = useState(null);
+	const openProductModal = (mode, productData) => {
+		if (mode === 'create') {
+			setFunctionMode('create');
+			setTempData({
+				...tempData,
+				...defaultData
+			})
+		} else {
+			setFunctionMode('edit');
+			setTempData({
+				...tempData,
+				...productData
+			})
+		}
+
+		const productModal = Modal.getInstance(productModalRef.current);
+		productModal.show();
+	}
+
+	const closeProductModal = () => {
+		const productModal = Modal.getInstance(productModalRef.current);
+		productModal.hide();
+		setTempData(defaultData);
+	}
+
+	const openDeleteModal = (productData) => {
+		setTempData({
+			...productData
+		})
+
+		const deleteModal = Modal.getInstance(deleteModalRef.current);
+		deleteModal.show();
+	}
+
+	const closeDeleteModal = () => {
+		const deleteModal = Modal.getInstance(deleteModalRef.current);
+		deleteModal.hide();
+		setTempData(defaultData);
+	}
+
+	const handleProductInput = (e) => {
+		const { type, name, checked, value } = e.target;
+		switch (type) {
+			case 'checkbox':
+				setTempData({
+					...tempData,
+					[name]: checked === true ? '1' : '0'
+				});
+				break;
+			case 'number':
+				setTempData({
+					...tempData,
+					[name]: Number(value)
+				});
+				break;
+			default:
+				setTempData({
+					...tempData,
+					[name]: value
+				});
+		}
+	}
+
 	return (
 		<div className='container'>
 			{isLogin ? (
 				<div className="row mt-3 d-flex justify-content-center">
 					<div className="col-md-10">
 						<div className="d-flex justify-content-end mb-2">
-							<button type="button" className='btn btn-warning me-3'>新增產品</button>
+							<button type="button" className='btn btn-warning me-3' onClick={() => openProductModal("create", defaultData)}>新增產品</button>
 						</div>
 						<table className="table">
 							<thead>
@@ -105,10 +196,14 @@ function AppW3() {
 												<td>{product.title}</td>
 												<td>{product.origin_price}</td>
 												<td>{product.price}</td>
-												<td>{product.is_enabled ? "是" : "否"}</td>
+												<td>{product.is_enabled ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
 												<td>
-													<button type="button" className='btn btn-primary me-2'>編輯</button>
-													<button type="button" className='btn btn-danger'>刪除</button>
+													<button type="button" className='btn btn-outline-primary me-2' onClick={() => {
+														openProductModal('edit', product);
+													}}>編輯</button>
+													<button type="button" className='btn btn-outline-danger' onClick={() => {
+														openDeleteModal(product);
+													}}>刪除</button>
 												</td>
 											</tr>
 										)) :
@@ -128,6 +223,141 @@ function AppW3() {
 					<Login account={account} login={signin} inputHandler={inputHandler} />
 				)
 			}
+			{/* product modal */}
+			<div className="modal" ref={productModalRef} tabIndex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+				<div className="modal-dialog modal-dialog-scrollable modal-xl">
+					<div className="modal-content">
+						<div className="modal-header">
+							<h3 className="modal-title fs-5" id="productModalLabel">{functionMode === 'create' ? '建立產品' : '編輯產品'}</h3>
+							<button type="button" className="btn-close" onClick={closeProductModal} aria-label="Close"></button>
+						</div>
+						<div className="modal-body">
+							<div className="row">
+								<div className="col-8">
+									<div className="mb-3 row">
+										<label htmlFor="productTitle" className='col-md-10'>標題</label>
+										<div className="col-12">
+											<input type="text" className="form-control" id='productTitle' placeholder='請輸入標題' name='title' value={tempData.title} onChange={handleProductInput} />
+										</div>
+									</div>
+									<div className="mb-3">
+										<div className="row">
+											<label htmlFor="productCategory" className='col-md-6'>分類</label>
+											<label htmlFor="productUnit" className='col-md-6'>單位</label>
+										</div>
+										<div className="row">
+											<div className="col-md-6">
+												<input type="text" className="form-control" id='productCategory' placeholder='請輸入分類' name='category' value={tempData.category} onChange={handleProductInput} />
+											</div>
+											<div className="col-md-6">
+												<input type="text" className="form-control" id='productUnit' placeholder='請輸入單位' name='unit' value={tempData.unit} onChange={handleProductInput} />
+											</div>
+										</div>
+									</div>
+									<div className="mb-3">
+										<div className="row">
+											<label htmlFor="productOriginPrice" className='col-md-6'>原價</label>
+											<label htmlFor="productPrice" className='col-md-6'>售價</label>
+										</div>
+										<div className="row">
+											<div className="col-md-6">
+												<input type="number" className="form-control" id='productOriginPrice' placeholder='請輸入原價' name='origin_price' value={tempData.origin_price} onChange={handleProductInput} />
+											</div>
+											<div className="col-md-6">
+												<input type="number" className="form-control" id='productPrice' placeholder='請輸入售價' name='price' value={tempData.price} onChange={handleProductInput} />
+											</div>
+										</div>
+									</div>
+									<hr />
+									<div className="mb-3 row">
+										<label htmlFor="productDescription" className='col-12'>產品描述</label>
+										<div className="col-12">
+											<textarea className="form-control" id="productDescription" rows="2" placeholder='請輸入產品描述' name='description' value={tempData.description} onChange={handleProductInput}></textarea>
+										</div>
+									</div>
+									<div className="mb-3 row">
+										<label htmlFor="productContent" className='col-12'>說明內容</label>
+										<div className="col-12">
+											<textarea className="form-control" id="productContent" rows="2" placeholder='請輸入說明內容' name='content' value={tempData.content} onChange={handleProductInput}></textarea>
+										</div>
+									</div>
+									<div className="form-check">
+										<input className="form-check-input" type="checkbox" id="productActivate" name='is_enabled' checked={tempData?.is_enabled == 1 ? true : false} onChange={handleProductInput} />
+										<label className="form-check-label" htmlFor="productActivate">
+											是否啟用
+										</label>
+									</div>
+								</div>
+								<div className="col-4">
+									<div className="row mb-3">
+										<label htmlFor="productImageUrl" className='col-12'>新增主圖網址</label>
+										<div className="col-12">
+											<input className="form-control" id="productImageUrl" placeholder='請輸入圖片網址' name='imageUrl' value={tempData.imageUrl} onChange={handleProductInput} />
+										</div>
+										<div className="col-12 d-flex flex-column">
+											<p className="fs-5">主圖</p>
+											<img src={tempData.imageUrl} alt="主圖" className='img-fluid mb-2' />
+										</div>
+										<div className={tempData.imageUrl ? 'col d-flex flex-column d-none' : 'col d-flex flex-column'}>
+											<button type="button" className='btn btn-outline-primary' >新增圖片</button>
+										</div>
+										<div className={tempData.imageUrl ? 'col d-flex flex-column' : 'col d-flex flex-column d-none'}>
+											<button type="button" className='btn btn-outline-danger'>移除圖片</button>
+										</div>
+									</div>
+									{tempData.imagesUrl?.map((image, index) => (
+										<div className="row mb-3" key={image}>
+											<div className="col-12 d-flex flex-column">
+												<p className="fs-5">{`副圖${index + 1}`}</p>
+												<img src={image} alt={`副圖${index + 1}`} className='img-fluid mb-2' />
+											</div>
+											{index !== tempData.imagesUrl.length - 1 || index === 4 ? (
+												<div className='col d-flex flex-column'>
+													<button type="button" className='btn btn-outline-danger'>移除圖片</button>
+												</div>
+											) : (
+												<>
+													<div className='col-6 d-flex flex-column'>
+														<button type="button" className='btn btn-outline-primary'>新增圖片</button>
+													</div>
+													<div className="col-6 d-flex flex-column">
+														<button type="button" className='btn btn-outline-danger'>移除圖片</button>
+													</div>
+												</>
+											)}
+										</div>)
+									)
+									}
+									{ }
+								</div>
+							</div>
+						</div>
+						<div className="modal-footer">
+							<button type="button" className="btn btn-secondary" onClick={closeProductModal}>取消</button>
+							<button type="button" className="btn btn-primary">{functionMode === 'create' ? '新增' : '儲存修改'}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{/* delete Modal */}
+			<div className="modal" ref={deleteModalRef} tabIndex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
+				<div className="modal-dialog">
+					<div className="modal-content">
+						<div className="modal-header">
+							<h3 className="modal-title fs-5" id="deleteLabel">刪除商品</h3>
+							<button type="button" className="btn-close" onClick={closeDeleteModal} aria-label="Close"></button>
+						</div>
+						<div className="modal-body">
+							{`確定刪除"${tempData.title}"嗎?`}
+						</div>
+						<div className="modal-footer">
+							<button type="button" className="btn btn-secondary" onClick={closeDeleteModal}>取消</button>
+							<button type="button" className="btn btn-danger">確定刪除</button>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }

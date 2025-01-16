@@ -5,7 +5,7 @@ import './assets/all.scss'
 import App from './AppW3.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+  // <StrictMode>
+  <App />
+  // </StrictMode>,
 )
