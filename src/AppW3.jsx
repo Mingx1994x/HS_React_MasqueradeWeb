@@ -33,7 +33,7 @@ function AppW3() {
 
 	const getProductsData = async () => {
 		try {
-			const res = await axios.get(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/products/all`);
+			const res = await axios.get(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/products/all`);
 			setProducts(Object.values(res.data.products));
 		} catch (error) {
 			alert(error?.response.data.message ? `${error?.response.data.message}\n煩請洽管理人員` : "系統忙線中，請洽管理人員");
@@ -48,7 +48,7 @@ function AppW3() {
 	const signin = async () => {
 		if (!account.username || !account.password) return
 		try {
-			const res = await axios.post(`${VITE_APP_BaseUrl}/v2/admin/signin`, account);
+			const res = await axios.post(`${VITE_APP_BaseUrl}/admin/signin`, account);
 			document.cookie = `HexToken=${res.data.token}; expires=${new Date(res.data.expired)}`;
 			setAccount({
 				username: '',
@@ -71,7 +71,7 @@ function AppW3() {
 
 	const logout = async () => {
 		try {
-			await axios.post(`${VITE_APP_BaseUrl}/v2/logout`);
+			await axios.post(`${VITE_APP_BaseUrl}/logout`);
 			document.cookie = "HexToken='';"
 			checkStatus();
 		} catch (error) {
@@ -83,7 +83,7 @@ function AppW3() {
 		let hexToken = document.cookie.replace(/(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/, "$1",);
 		axios.defaults.headers.common['Authorization'] = hexToken;
 		try {
-			await axios.post(`${VITE_APP_BaseUrl}/v2/api/user/check`);
+			await axios.post(`${VITE_APP_BaseUrl}/api/user/check`);
 			setIsLogin(true);
 			getProductsData();
 		} catch (error) {
@@ -217,9 +217,9 @@ function AppW3() {
 
 		try {
 			if (mode === 'create') {
-				await axios.post(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product`, productData)
+				await axios.post(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product`, productData)
 			} else {
-				await axios.put(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product/${data.id}`, productData);
+				await axios.put(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${data.id}`, productData);
 			}
 			getProductsData();
 			closeProductModal();
@@ -229,7 +229,7 @@ function AppW3() {
 
 	const deleteProduct = async (id) => {
 		try {
-			await axios.delete(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product/${id}`);
+			await axios.delete(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${id}`);
 			getProductsData();
 			closeDeleteModal();
 		} catch (error) {
