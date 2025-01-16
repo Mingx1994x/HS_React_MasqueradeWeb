@@ -134,6 +134,7 @@ function AppW3() {
 
 	const openDeleteModal = (productData) => {
 		setTempData({
+			...tempData,
 			...productData
 		})
 
