@@ -241,7 +241,11 @@ function AppW3() {
 			{isLogin ? (
 				<div className="row mt-3 d-flex justify-content-center">
 					<div className="col-md-10">
-						<div className="d-flex justify-content-end mb-2">
+						<div className="d-flex align-items-center mb-2">
+							<div className="d-flex align-items-center me-auto">
+								<h1 className='mb-0 me-2'>產品列表</h1>
+								<button type="button" className='btn btn-danger' onClick={logout}>登出</button>
+							</div>
 							<button type="button" className='btn btn-warning me-3' onClick={() => openProductModal("create", defaultData)}>新增產品</button>
 						</div>
 						<table className="table">
@@ -279,9 +283,6 @@ function AppW3() {
 								}
 							</tbody>
 						</table>
-						<div className="d-flex">
-							<button type="button" className='btn btn-danger ms-auto' onClick={logout}>登出</button>
-						</div>
 					</div>
 				</div>
 			) :
