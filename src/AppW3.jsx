@@ -153,7 +153,7 @@ function AppW3() {
 			case 'checkbox':
 				setTempData({
 					...tempData,
-					[name]: checked === true ? '1' : '0'
+					[name]: checked === true ? 1 : 0
 				});
 				break;
 			case 'number':
@@ -167,6 +167,37 @@ function AppW3() {
 					...tempData,
 					[name]: value
 				});
+		}
+	}
+
+	const manageProduct = async (data, mode) => {
+		const { title, category, unit, price, origin_price } = data;
+		if (!title || !category || !unit || !price || !origin_price) {
+			alert('產品輸入格式錯誤，新增失敗');
+			return
+		}
+		let productData = {
+			data
+		}
+
+		try {
+			if (mode === 'create') {
+				await axios.post(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product`, productData)
+			} else {
+				await axios.put(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product/${data.id}`, productData);
+			}
+			getProductsData();
+			closeProductModal();
+		} catch (error) {
+		}
+	}
+
+	const deleteProduct = async (id) => {
+		try {
+			await axios.delete(`${VITE_APP_BaseUrl}/v2/api/${VITE_APP_API}/admin/product/${id}`);
+			getProductsData();
+			closeDeleteModal();
+		} catch (error) {
 		}
 	}
 
@@ -196,7 +227,7 @@ function AppW3() {
 												<td>{product.title}</td>
 												<td>{product.origin_price}</td>
 												<td>{product.price}</td>
-												<td>{product.is_enabled ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
+												<td>{product.is_enabled === 1 ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
 												<td>
 													<button type="button" className='btn btn-outline-primary me-2' onClick={() => {
 														openProductModal('edit', product);
@@ -334,7 +365,9 @@ function AppW3() {
 						</div>
 						<div className="modal-footer">
 							<button type="button" className="btn btn-secondary" onClick={closeProductModal}>取消</button>
-							<button type="button" className="btn btn-primary">{functionMode === 'create' ? '新增' : '儲存修改'}</button>
+							<button type="button" className="btn btn-primary" onClick={() => {
+								manageProduct(tempData, functionMode)
+							}}>{functionMode === 'create' ? '新增' : '儲存修改'}</button>
 						</div>
 					</div>
 				</div>
@@ -353,7 +386,9 @@ function AppW3() {
 						</div>
 						<div className="modal-footer">
 							<button type="button" className="btn btn-secondary" onClick={closeDeleteModal}>取消</button>
-							<button type="button" className="btn btn-danger">確定刪除</button>
+							<button type="button" className="btn btn-danger" onClick={() => {
+								deleteProduct(tempData.id)
+							}}>確定刪除</button>
 						</div>
 					</div>
 				</div>
