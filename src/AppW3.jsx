@@ -34,7 +34,7 @@ function AppW3() {
 	const getProductsData = async () => {
 		try {
 			const res = await axios.get(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/products/all`);
-			setProducts(Object.values(res.data.products));
+			setProducts(Object.values(res.data.products).reverse());
 		} catch (error) {
 			alert(error?.response.data.message ? `${error?.response.data.message}\n煩請洽管理人員` : "系統忙線中，請洽管理人員");
 		}
@@ -55,7 +55,7 @@ function AppW3() {
 				password: ''
 			});
 			setIsLogin(true);
-			checkStatus();
+			getProductsData();
 		} catch (error) {
 			alert(error.response.data.error.message);
 		}
@@ -80,8 +80,6 @@ function AppW3() {
 	}
 
 	const checkStatus = async () => {
-		let hexToken = document.cookie.replace(/(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/, "$1",);
-		axios.defaults.headers.common['Authorization'] = hexToken;
 		try {
 			await axios.post(`${VITE_APP_BaseUrl}/api/user/check`);
 			setIsLogin(true);
@@ -93,6 +91,8 @@ function AppW3() {
 	}
 
 	useEffect(() => {
+		let hexToken = document.cookie.replace(/(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/, "$1",);
+		axios.defaults.headers.common['Authorization'] = hexToken;
 		checkStatus()
 	}, []);
 
@@ -110,10 +110,7 @@ function AppW3() {
 	const openProductModal = (mode, productData) => {
 		if (mode === 'create') {
 			setFunctionMode('create');
-			setTempData({
-				...tempData,
-				...defaultData
-			})
+			setTempData(defaultData)
 		} else {
 			setFunctionMode('edit');
 			setTempData({
@@ -181,7 +178,7 @@ function AppW3() {
 
 	}
 	const addProductImage = () => {
-		let othersImages = [...tempData.imagesUrl];
+		let othersImages = [...tempData?.imagesUrl];
 		othersImages.push('');
 		setTempData({
 			...tempData,
@@ -190,12 +187,21 @@ function AppW3() {
 	}
 
 	const removeProductImage = (mode, index = null) => {
+
 		if (mode === 'main') {
+			if (!tempData.imageUrl) {
+				alert('沒有圖片可以刪除喔！');
+				return
+			}
 			setTempData({
 				...tempData,
 				imageUrl: ''
 			})
 		} else {
+			if (!tempData.imagesUrl[index]) {
+				alert('沒有圖片可以刪除喔！');
+				return
+			}
 			let othersImages = [...tempData.imagesUrl];
 			othersImages.splice(index, 1);
 			setTempData({
@@ -205,26 +211,47 @@ function AppW3() {
 		}
 	}
 
-	const manageProduct = async (data, mode) => {
-		const { title, category, unit, price, origin_price } = data;
+	const validateProductForm = (data) => {
+		const { title, category, unit, price, origin_price, imageUrl, imagesUrl } = data;
 		if (!title || !category || !unit || !price || !origin_price) {
-			alert('產品輸入格式錯誤，新增失敗');
-			return
+			alert('產品資訊必填欄位未填寫，新增失敗');
+			return false
+		} else if (imageUrl === '') {
+			alert('產品主圖不可以為空值唷')
+			return false
+		} else if (imagesUrl.includes('')) {
+			alert('產品副圖不可以為空值唷')
+			return false
 		}
+
+		return true
+	}
+
+	const createProduct = async (productData) => {
+		try {
+			const res = await axios.post(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product`, productData)
+		} catch (error) {
+		}
+	}
+
+	const updateProduct = async (productData) => {
+		try {
+			let productId = productData.data.id;
+			await axios.put(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${productId}`, productData);
+		} catch (error) {
+		}
+	}
+
+	const manageProduct = async (data, mode) => {
+
+		if (!validateProductForm(data)) return
 		let productData = {
 			data
 		}
-
-		try {
-			if (mode === 'create') {
-				await axios.post(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product`, productData)
-			} else {
-				await axios.put(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${data.id}`, productData);
-			}
-			getProductsData();
-			closeProductModal();
-		} catch (error) {
-		}
+		const manageApiCall = mode === 'create' ? createProduct : updateProduct;
+		await manageApiCall(productData);
+		getProductsData();
+		closeProductModal();
 	}
 
 	const deleteProduct = async (id) => {
@@ -328,10 +355,10 @@ function AppW3() {
 										</div>
 										<div className="row">
 											<div className="col-md-6">
-												<input type="number" className="form-control" id='productOriginPrice' placeholder='請輸入原價' name='origin_price' value={tempData.origin_price} onChange={handleProductInput} />
+												<input type="number" className="form-control" id='productOriginPrice' placeholder='請輸入原價' min={0} name='origin_price' value={tempData.origin_price} onChange={handleProductInput} />
 											</div>
 											<div className="col-md-6">
-												<input type="number" className="form-control" id='productPrice' placeholder='請輸入售價' name='price' value={tempData.price} onChange={handleProductInput} />
+												<input type="number" className="form-control" id='productPrice' placeholder='請輸入售價' min={0} name='price' value={tempData.price} onChange={handleProductInput} />
 											</div>
 										</div>
 									</div>
@@ -363,23 +390,25 @@ function AppW3() {
 										</div>
 										<label htmlFor="productImageUrl" className='col-12'>新增主圖網址</label>
 										<div className="col-12 mb-2">
-											<input className="form-control" id="productImageUrl" placeholder='請輸入圖片網址' name='imageUrl' value={tempData.imageUrl} onChange={handleProductInput} />
+											<input className="form-control" id="productImageUrl" placeholder='請貼上圖片網址' name='imageUrl' value={tempData.imageUrl} onChange={handleProductInput} />
 										</div>
-										{tempData.imageUrl ? (
+										{tempData.imagesUrl?.length > 0 ? (
+											<div className='col-12 d-flex flex-column'>
+												<button type="button" className='btn btn-outline-danger' onClick={() => {
+													removeProductImage("main")
+												}}>移除圖片</button>
+											</div>
+										) : (
 											<>
-												<div className={tempData.imagesUrl.length > 0 ? 'col-6 d-flex flex-column d-none' : 'col-6 d-flex flex-column'}>
+												<div className='col-6 d-flex flex-column'>
 													<button type="button" className='btn btn-outline-primary' onClick={addProductImage}>新增圖片</button>
 												</div>
-												<div className={tempData.imagesUrl.length > 0 ? 'col-12 d-flex flex-column' : 'col-6 d-flex flex-column'}>
+												<div className='col-6 d-flex flex-column'>
 													<button type="button" className='btn btn-outline-danger' onClick={() => {
 														removeProductImage("main")
 													}}>移除圖片</button>
 												</div>
 											</>
-										) : (
-											<div className='col-12 d-flex flex-column'>
-												<button type="button" className='btn btn-outline-primary' onClick={addProductImage}>新增圖片</button>
-											</div>
 										)}
 									</div>
 									{tempData.imagesUrl?.map((image, index) => (
@@ -390,11 +419,11 @@ function AppW3() {
 											</div>
 											<label htmlFor="productImageUrl" className='col-12'>新增副圖網址</label>
 											<div className="col-12 mb-2">
-												<input className="form-control" id="productImageUrl" placeholder='請輸入圖片網址' value={image} onChange={(e) => {
+												<input className="form-control" id="productImageUrl" placeholder='請貼上圖片網址' value={image} onChange={(e) => {
 													handleProductImages(index, e.target.value)
 												}} />
 											</div>
-											{index !== tempData.imagesUrl.length - 1 || index === 4 ? (
+											{image === '' || index !== tempData.imagesUrl?.length - 1 || index === 4 ? (
 												<div className='col d-flex flex-column'>
 													<button type="button" className='btn btn-outline-danger' onClick={() => {
 														removeProductImage('others', index)
