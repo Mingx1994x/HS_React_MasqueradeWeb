@@ -1,5 +1,4 @@
-
-function Login({ account, login, inputHandler }) {
+const Login = ({ account, login, inputHandler }) => {
 
 	return (
 		<div className="loginPhase">
