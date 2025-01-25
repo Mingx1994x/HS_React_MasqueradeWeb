@@ -115,9 +115,6 @@ function AppW3() {
 	const productModalRef = useRef(null);
 	const deleteModalRef = useRef(null);
 	useEffect(() => {
-		new Modal(productModalRef.current, {
-			backdrop: 'static'
-		});
 		new Modal(deleteModalRef.current, {
 			backdrop: 'static'
 		});
@@ -139,12 +136,6 @@ function AppW3() {
 		productModal.show();
 	}
 
-	const closeProductModal = () => {
-		const productModal = Modal.getInstance(productModalRef.current);
-		productModal.hide();
-		setTempData(defaultData);
-	}
-
 	const openDeleteModal = (productData) => {
 		setTempData({
 			...tempData,
@@ -159,115 +150,6 @@ function AppW3() {
 		const deleteModal = Modal.getInstance(deleteModalRef.current);
 		deleteModal.hide();
 		setTempData(defaultData);
-	}
-
-	const handleProductInput = (e) => {
-		const { type, name, checked, value } = e.target;
-		switch (type) {
-			case 'checkbox':
-				setTempData({
-					...tempData,
-					[name]: checked === true ? 1 : 0
-				});
-				break;
-			case 'number':
-				setTempData({
-					...tempData,
-					[name]: Number(value)
-				});
-				break;
-			default:
-				setTempData({
-					...tempData,
-					[name]: value
-				});
-		}
-	}
-
-	const handleProductImages = (index, value) => {
-		let othersImages = [...tempData.imagesUrl];
-		othersImages[index] = value;
-		setTempData({
-			...tempData,
-			imagesUrl: [...othersImages]
-		})
-
-	}
-	const addProductImage = () => {
-		let othersImages = [...tempData?.imagesUrl];
-		othersImages.push('');
-		setTempData({
-			...tempData,
-			imagesUrl: [...othersImages]
-		})
-	}
-
-	const removeProductImage = (mode, index = null) => {
-
-		if (mode === 'main') {
-			if (!tempData.imageUrl) {
-				alert('沒有圖片可以刪除喔！');
-				return
-			}
-			setTempData({
-				...tempData,
-				imageUrl: ''
-			})
-		} else {
-			if (!tempData.imagesUrl[index]) {
-				alert('沒有圖片可以刪除喔！');
-				return
-			}
-			let othersImages = [...tempData.imagesUrl];
-			othersImages.splice(index, 1);
-			setTempData({
-				...tempData,
-				imagesUrl: [...othersImages]
-			})
-		}
-	}
-
-	const validateProductForm = (data) => {
-		const { title, category, unit, price, origin_price, imageUrl, imagesUrl } = data;
-		if (!title || !category || !unit || !price || !origin_price) {
-			alert('產品資訊必填欄位未填寫，新增失敗');
-			return false
-		} else if (imageUrl === '') {
-			alert('產品主圖不可以為空值唷')
-			return false
-		} else if (imagesUrl.includes('')) {
-			alert('產品副圖不可以為空值唷')
-			return false
-		}
-
-		return true
-	}
-
-	const createProduct = async (productData) => {
-		try {
-			const res = await axios.post(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product`, productData)
-		} catch (error) {
-		}
-	}
-
-	const updateProduct = async (productData) => {
-		try {
-			let productId = productData.data.id;
-			await axios.put(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${productId}`, productData);
-		} catch (error) {
-		}
-	}
-
-	const manageProduct = async (data, mode) => {
-
-		if (!validateProductForm(data)) return
-		let productData = {
-			data
-		}
-		const manageApiCall = mode === 'create' ? createProduct : updateProduct;
-		await manageApiCall(productData);
-		getProductsData();
-		closeProductModal();
 	}
 
 	const deleteProduct = async (id) => {
@@ -381,24 +263,11 @@ function AppW3() {
 			{/* product modal */}
 			<ProductModal
 				modalRef={productModalRef}
-				handleProductInput={handleProductInput}
-				closeProductModal={closeProductModal}
-				manageProduct={manageProduct}
-				handleProductImages={handleProductImages}
-				removeProductImage={removeProductImage}
-				addProductImage={addProductImage}
+				getProductsData={getProductsData}
 				functionMode={functionMode}
 				tempData={tempData}
-				title={tempData.title}
-				unit={tempData.unit}
-				category={tempData.category}
-				originPrice={tempData.origin_price}
-				price={tempData.price}
-				description={tempData.description}
-				content={tempData.content}
-				isEnabled={tempData.is_enabled}
-				imageUrl={tempData.imageUrl}
-				imagesUrl={tempData?.imagesUrl}
+				setTempData={setTempData}
+				defaultData={defaultData}
 			/>
 			{/* delete Modal */}
 			<DeleteModal
