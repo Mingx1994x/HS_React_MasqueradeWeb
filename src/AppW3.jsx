@@ -14,6 +14,7 @@ function AppW3() {
 		}
 	);
 	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+	const [allProducts, setAllProducts] = useState([]);
 	const [products, setProducts] = useState([]);
 	let defaultData = {
 		category: '',
@@ -30,14 +31,29 @@ function AppW3() {
 		imagesUrl: []
 	}
 	const [tempData, setTempData] = useState(defaultData);
+	const listNum = 9;
 
 	const getProductsData = async () => {
+		console.log(1);
+
 		try {
 			const res = await axios.get(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/products/all`);
-			setProducts(Object.values(res.data.products).reverse());
+			let productList = Object.values(res.data.products).reverse();
+			// setProducts(productList);
+			setAllProducts(productList);
+			sortPage(productList.length, listNum);
+			setProducts(sortProductsData(productList, currentPage))
 		} catch (error) {
 			alert(error?.response.data.message ? `${error?.response.data.message}\n煩請洽管理人員` : "系統忙線中，請洽管理人員");
 		}
+	}
+
+	const sortProductsData = (products, page) => {
+		let productsGroup = [];
+		for (let i = 0; i < products.length; i += listNum) {
+			productsGroup.push([...products].splice(i, listNum))
+		}
+		return (productsGroup[page - 1]);
 	}
 
 	const initProductsData = () => {
@@ -263,55 +279,117 @@ function AppW3() {
 		}
 	}
 
+	//pagination
+	const [pages, setPages] = useState(null);
+	const [pageState, setPageState] = useState({})
+	const [currentPage, setCurrentPage] = useState(1);
+
+	const sortPage = (productQty, num) => setPages(Math.ceil(productQty / num));
+
+	const switchCurrentPage = (mode) => {
+		if (mode === 'next') {
+			setCurrentPage(currentPage + 1)
+		} else {
+			setCurrentPage(currentPage - 1)
+		}
+	}
+
+	useEffect(() => {
+		if (currentPage === 1) {
+			setPageState({
+				previous: false,
+				next: true,
+			})
+		} else if (currentPage === pages) {
+			setPageState({
+				previous: true,
+				next: false,
+			})
+		} else {
+			setPageState({
+				previous: true,
+				next: true,
+			})
+		}
+		setProducts(sortProductsData(allProducts, currentPage))
+	}, [currentPage])
+
 	return (
 		<div className='container'>
 			{isLogin ? (
-				<div className="row mt-3 d-flex justify-content-center">
-					<div className="col-md-10">
-						<div className="d-flex align-items-center mb-2">
-							<div className="d-flex align-items-center me-auto">
-								<h1 className='mb-0 me-2'>產品列表</h1>
-								<button type="button" className='btn btn-danger' onClick={logout}>登出</button>
+				<>
+					<div className="row mt-3 d-flex justify-content-center">
+						<div className="col-md-10">
+							<div className="d-flex align-items-center mb-2">
+								<div className="d-flex align-items-center me-auto">
+									<h1 className='mb-0 me-2'>產品列表</h1>
+									<button type="button" className='btn btn-danger' onClick={logout}>登出</button>
+								</div>
+								<button type="button" className='btn btn-warning me-3' onClick={() => openProductModal("create", defaultData)}>新增產品</button>
 							</div>
-							<button type="button" className='btn btn-warning me-3' onClick={() => openProductModal("create", defaultData)}>新增產品</button>
-						</div>
-						<table className="table">
-							<thead>
-								<tr className='table-secondary'>
-									<th>產品名稱</th>
-									<th>原價</th>
-									<th>售價</th>
-									<th>是否啟用</th>
-									<th>操作</th>
-								</tr>
-							</thead>
-							<tbody>
-								{
-									products ?
-										products.map(product => (
-											<tr key={product.id}>
-												<td>{product.title}</td>
-												<td>{product.origin_price}</td>
-												<td>{product.price}</td>
-												<td>{product.is_enabled === 1 ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
-												<td>
-													<button type="button" className='btn btn-outline-primary me-2' onClick={() => {
-														openProductModal('edit', product);
-													}}>編輯</button>
-													<button type="button" className='btn btn-outline-danger' onClick={() => {
-														openDeleteModal(product);
-													}}>刪除</button>
-												</td>
+							<table className="table">
+								<thead>
+									<tr className='table-secondary'>
+										<th>產品名稱{`(第${(currentPage - 1) * 9 + 1}~${currentPage * 9}筆)`}</th>
+										<th>原價</th>
+										<th>售價</th>
+										<th>是否啟用</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									{
+										products ?
+											products.map(product => (
+												<tr key={product.id}>
+													<td>{product.title}</td>
+													<td>{product.origin_price}</td>
+													<td>{product.price}</td>
+													<td>{product.is_enabled === 1 ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
+													<td>
+														<button type="button" className='btn btn-outline-primary me-2' onClick={() => {
+															openProductModal('edit', product);
+														}}>編輯</button>
+														<button type="button" className='btn btn-outline-danger' onClick={() => {
+															openDeleteModal(product);
+														}}>刪除</button>
+													</td>
+												</tr>
+											)) :
+											<tr>
+												<td colSpan="5" className='text-center'> <Loading /> </td>
 											</tr>
-										)) :
-										<tr>
-											<td colSpan="5" className='text-center'> <Loading /> </td>
-										</tr>
-								}
-							</tbody>
-						</table>
+									}
+								</tbody>
+							</table>
+						</div>
 					</div>
-				</div>
+					<nav>
+						<ul className="pagination justify-content-start">
+							<li className={`page-item ${!pageState.previous && 'disabled'}`}>
+								<a className="page-link" onClick={(e) => {
+									e.preventDefault();
+									switchCurrentPage('prev')
+								}}>Previous</a>
+							</li>
+							{[...Array(pages).keys()].map(page =>
+
+							(<li className={`page-item ${page + 1 === currentPage && 'active'}`} key={page}>
+								<a className="page-link" href="#" onClick={(e) => {
+									e.preventDefault();
+									setCurrentPage(page + 1);
+								}}>{page + 1}</a>
+							</li>)
+							)}
+							<li className={`page-item ${!pageState.next && 'disabled'}`}>
+								<a className="page-link" href="#" onClick={(e) => {
+									e.preventDefault();
+									switchCurrentPage('next')
+								}}>Next</a>
+							</li>
+						</ul>
+					</nav>
+				</>
 			) :
 				(
 					<Login account={account} login={signin} inputHandler={inputHandler} />
