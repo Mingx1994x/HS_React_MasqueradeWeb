@@ -70,10 +70,6 @@ const ProductModal = ({ modalRef, getProductsData, functionMode, tempData, setTe
 				imageUrl: ''
 			})
 		} else {
-			if (!tempData.imagesUrl[index]) {
-				alert('目前副圖欄位中沒有圖片可以刪除喔！');
-				return
-			}
 			let othersImages = [...tempData.imagesUrl];
 			othersImages.splice(index, 1);
 			setTempData({
