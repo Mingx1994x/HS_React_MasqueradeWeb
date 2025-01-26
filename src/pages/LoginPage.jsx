@@ -1,4 +1,41 @@
-const Login = ({ account, login, inputHandler }) => {
+import { useState } from 'react'
+import axios from 'axios';
+
+const { VITE_APP_BaseUrl } = import.meta.env;
+
+const Login = ({ setIsLogin, getProductsData }) => {
+
+	const [account, setAccount] = useState(
+		{
+			username: "",
+			password: ""
+		}
+	);
+
+	const signin = async () => {
+		if (!account.username || !account.password) return
+		try {
+			const res = await axios.post(`${VITE_APP_BaseUrl}/admin/signin`, account);
+			document.cookie = `HexToken=${res.data.token}; expires=${new Date(res.data.expired)}`;
+			setAccount({
+				username: '',
+				password: ''
+			});
+			axios.defaults.headers.common['Authorization'] = res.data.token;
+			setIsLogin(true);
+			getProductsData();
+		} catch (error) {
+			alert(error.response.data.error.message);
+		}
+	}
+
+	const accountInputHandler = (e) => {
+		const { name, value } = e.target;
+		setAccount({
+			...account,
+			[name]: value
+		})
+	}
 
 	return (
 		<div className="loginPhase">
@@ -6,7 +43,7 @@ const Login = ({ account, login, inputHandler }) => {
 				<div className="col-md-6 col-lg-8">
 					<form className='card' onSubmit={(e) => {
 						e.preventDefault();
-						login()
+						signin()
 					}}>
 						<div className="card-body">
 							<div className="mb-3">
@@ -14,7 +51,7 @@ const Login = ({ account, login, inputHandler }) => {
 									<input type="email" name='username' className="form-control" id="floatingInput"
 										value={account?.username}
 										placeholder="name@example.com"
-										onChange={inputHandler} />
+										onChange={accountInputHandler} />
 									<label htmlFor="floatingInput">Email</label>
 								</div>
 							</div>
@@ -24,7 +61,7 @@ const Login = ({ account, login, inputHandler }) => {
 									<input type="password" name='password' className="form-control" id="floatingPassword"
 										value={account?.password}
 										placeholder="Password"
-										onChange={inputHandler} />
+										onChange={accountInputHandler} />
 									<label htmlFor="floatingPassword">Password</label>
 								</div>
 							</div>

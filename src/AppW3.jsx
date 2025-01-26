@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
-import Login from './components/LoginPage';
+import Login from './pages/LoginPage';
 import Loading from './components/LoadingPage';
 import DeleteModal from './components/deleteModal';
 import ProductModal from './components/productModal';
@@ -12,12 +12,6 @@ const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 
 function AppW3() {
 	const [isLogin, setIsLogin] = useState(false);
-	const [account, setAccount] = useState(
-		{
-			username: "",
-			password: ""
-		}
-	);
 	const [allProducts, setAllProducts] = useState([]);
 	const [products, setProducts] = useState([]);
 	let defaultData = {
@@ -62,31 +56,6 @@ function AppW3() {
 		setTempData(defaultData);
 		setCurrentPage(1);
 		setPageState(null);
-	}
-
-	const signin = async () => {
-		if (!account.username || !account.password) return
-		try {
-			const res = await axios.post(`${VITE_APP_BaseUrl}/admin/signin`, account);
-			document.cookie = `HexToken=${res.data.token}; expires=${new Date(res.data.expired)}`;
-			setAccount({
-				username: '',
-				password: ''
-			});
-			axios.defaults.headers.common['Authorization'] = res.data.token;
-			setIsLogin(true);
-			getProductsData();
-		} catch (error) {
-			alert(error.response.data.error.message);
-		}
-	}
-
-	const inputHandler = (e) => {
-		const { name, value } = e.target;
-		setAccount({
-			...account,
-			[name]: value
-		})
 	}
 
 	const logout = async () => {
@@ -233,7 +202,10 @@ function AppW3() {
 				</>
 			) :
 				(
-					<Login account={account} login={signin} inputHandler={inputHandler} />
+					<Login
+						setIsLogin={setIsLogin}
+						getProductsData={getProductsData}
+					/>
 				)
 			}
 			{/* product modal */}
