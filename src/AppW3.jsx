@@ -70,6 +70,7 @@ function AppW3() {
 				username: '',
 				password: ''
 			});
+			axios.defaults.headers.common['Authorization'] = res.data.token;
 			setIsLogin(true);
 			getProductsData();
 		} catch (error) {
