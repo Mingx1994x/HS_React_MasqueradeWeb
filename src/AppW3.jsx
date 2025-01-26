@@ -114,11 +114,7 @@ function AppW3() {
 
 	const productModalRef = useRef(null);
 	const deleteModalRef = useRef(null);
-	useEffect(() => {
-		new Modal(deleteModalRef.current, {
-			backdrop: 'static'
-		});
-	}, [])
+
 	const [functionMode, setFunctionMode] = useState(null);
 	const openProductModal = (mode, productData) => {
 		if (mode === 'create') {
@@ -136,29 +132,14 @@ function AppW3() {
 		productModal.show();
 	}
 
-	const openDeleteModal = (productData) => {
+	const openDeleteModal = (modalRef, productData) => {
 		setTempData({
 			...tempData,
 			...productData
 		})
 
-		const deleteModal = Modal.getInstance(deleteModalRef.current);
+		const deleteModal = Modal.getInstance(modalRef.current);
 		deleteModal.show();
-	}
-
-	const closeDeleteModal = () => {
-		const deleteModal = Modal.getInstance(deleteModalRef.current);
-		deleteModal.hide();
-		setTempData(defaultData);
-	}
-
-	const deleteProduct = async (id) => {
-		try {
-			await axios.delete(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${id}`);
-			getProductsData();
-			closeDeleteModal();
-		} catch (error) {
-		}
 	}
 
 	//pagination
@@ -233,7 +214,7 @@ function AppW3() {
 															openProductModal('edit', product);
 														}}>編輯</button>
 														<button type="button" className='btn btn-outline-danger' onClick={() => {
-															openDeleteModal(product);
+															openDeleteModal(deleteModalRef, product);
 														}}>刪除</button>
 													</td>
 												</tr>
@@ -272,10 +253,11 @@ function AppW3() {
 			{/* delete Modal */}
 			<DeleteModal
 				modalRef={deleteModalRef}
-				closeDeleteModal={closeDeleteModal}
-				deleteProduct={deleteProduct}
 				title={tempData.title}
 				id={tempData.id}
+				setTempData={setTempData}
+				defaultData={defaultData}
+				getProductsData={getProductsData}
 			/>
 		</div>
 	)

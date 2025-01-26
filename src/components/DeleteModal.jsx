@@ -1,4 +1,31 @@
-const DeleteModal = ({ modalRef, closeDeleteModal, deleteProduct, title, id }) => {
+import { useEffect } from 'react'
+import axios from 'axios';
+import { Modal } from 'bootstrap';
+
+const DeleteModal = ({ modalRef, title, id, setTempData, defaultData, getProductsData }) => {
+	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+
+	const closeDeleteModal = () => {
+		const deleteModal = Modal.getInstance(modalRef.current);
+		deleteModal.hide();
+		setTempData(defaultData);
+	}
+
+	const deleteProduct = async (id) => {
+		try {
+			await axios.delete(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${id}`);
+			getProductsData();
+			closeDeleteModal();
+		} catch (error) {
+		}
+	}
+
+	useEffect(() => {
+		new Modal(modalRef.current, {
+			backdrop: 'static'
+		});
+	}, [])
+
 	return (
 		<div className="modal" ref={modalRef} tabIndex="-1" aria-labelledby="deleteLabel" aria-hidden="true">
 			<div className="modal-dialog">
