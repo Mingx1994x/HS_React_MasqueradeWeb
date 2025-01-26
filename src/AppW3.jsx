@@ -135,7 +135,9 @@ function AppW3() {
 		<div className='container'>
 			{isLogin ? (
 				<>
-					<div className="row mt-3 d-flex justify-content-center">
+					<div className="row mt-3 mb-5 d-flex justify-content-center"
+						style={{ minHeight: '75vh' }}
+					>
 						<div className="col-md-10">
 							<div className="d-flex align-items-center mb-2">
 								<div className="d-flex align-items-center me-auto">

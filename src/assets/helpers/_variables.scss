@@ -741,7 +741,9 @@ $table-cell-padding-x: 0.5rem !default;
 $table-cell-padding-y-sm: 0.25rem !default;
 $table-cell-padding-x-sm: 0.25rem !default;
 
-$table-cell-vertical-align: top !default;
+// $table-cell-vertical-align: top !default;
+//custom
+$table-cell-vertical-align: middle !default;
 
 $table-color: var(--#{$prefix}emphasis-color) !default;
 $table-bg: var(--#{$prefix}body-bg) !default;

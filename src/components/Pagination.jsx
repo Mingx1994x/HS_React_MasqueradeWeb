@@ -10,7 +10,7 @@ const Pagination = ({ setCurrentPage, pageState, totalPages, currentPage }) => {
 
 	return (
 		<nav>
-			<ul className="pagination justify-content-start">
+			<ul className="pagination justify-content-center">
 				<li className={`page-item ${!pageState.previous && 'disabled'}`}>
 					<a className="page-link" onClick={(e) => {
 						e.preventDefault();
