@@ -89,30 +89,19 @@ function AppW3() {
 	const deleteModalRef = useRef(null);
 
 	const [functionMode, setFunctionMode] = useState(null);
-	const openProductModal = (mode, productData) => {
+	const openModal = (mode, productData, modalRef = productModalRef) => {
+		setFunctionMode(mode);
 		if (mode === 'create') {
-			setFunctionMode('create');
 			setTempData(defaultData)
 		} else {
-			setFunctionMode('edit');
 			setTempData({
 				...tempData,
 				...productData
 			})
 		}
 
-		const productModal = Modal.getInstance(productModalRef.current);
-		productModal.show();
-	}
-
-	const openDeleteModal = (modalRef, productData) => {
-		setTempData({
-			...tempData,
-			...productData
-		})
-
-		const deleteModal = Modal.getInstance(modalRef.current);
-		deleteModal.show();
+		const targetModal = Modal.getInstance(modalRef.current);
+		targetModal.show();
 	}
 
 	//pagination
@@ -153,7 +142,7 @@ function AppW3() {
 									<h1 className='mb-0 me-2'>產品列表</h1>
 									<button type="button" className='btn btn-danger' onClick={logout}>登出</button>
 								</div>
-								<button type="button" className='btn btn-warning me-3' onClick={() => openProductModal("create", defaultData)}>新增產品</button>
+								<button type="button" className='btn btn-warning me-3' onClick={() => openModal("create", defaultData)}>新增產品</button>
 							</div>
 							<table className="table">
 								<thead>
@@ -176,10 +165,10 @@ function AppW3() {
 													<td>{product.is_enabled === 1 ? <p className='text-success'>已啟用</p> : <p className='text-danger'>未啟用</p>}</td>
 													<td>
 														<button type="button" className='btn btn-outline-primary me-2' onClick={() => {
-															openProductModal('edit', product);
+															openModal('edit', product);
 														}}>編輯</button>
 														<button type="button" className='btn btn-outline-danger' onClick={() => {
-															openDeleteModal(deleteModalRef, product);
+															openModal('delete', product, deleteModalRef);
 														}}>刪除</button>
 													</td>
 												</tr>
