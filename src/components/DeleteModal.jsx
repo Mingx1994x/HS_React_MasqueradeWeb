@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
+const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+
 const DeleteModal = ({ modalRef, title, id, setTempData, defaultData, getProductsData }) => {
-	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 
 	const closeDeleteModal = () => {
 		const deleteModal = Modal.getInstance(modalRef.current);

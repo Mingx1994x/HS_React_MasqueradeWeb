@@ -8,6 +8,8 @@ import DeleteModal from './components/deleteModal';
 import ProductModal from './components/productModal';
 import Pagination from './components/Pagination';
 
+const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+
 function AppW3() {
 	const [isLogin, setIsLogin] = useState(false);
 	const [account, setAccount] = useState(
@@ -16,7 +18,6 @@ function AppW3() {
 			password: ""
 		}
 	);
-	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 	const [allProducts, setAllProducts] = useState([]);
 	const [products, setProducts] = useState([]);
 	let defaultData = {

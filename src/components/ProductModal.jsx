@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
+const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+
 const ProductModal = ({ modalRef, getProductsData, functionMode, tempData, setTempData, defaultData }) => {
 
-	const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 
 	useEffect(() => {
 		new Modal(modalRef.current, {
