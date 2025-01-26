@@ -144,19 +144,11 @@ function AppW3() {
 	}
 
 	//pagination
-	const [pages, setPages] = useState(null);
+	const [totalPages, setTotalPages] = useState(null);
 	const [pageState, setPageState] = useState({})
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const sortPage = (productQty, num) => setPages(Math.ceil(productQty / num));
-
-	const switchCurrentPage = (mode) => {
-		if (mode === 'next') {
-			setCurrentPage(currentPage + 1)
-		} else {
-			setCurrentPage(currentPage - 1)
-		}
-	}
+	const sortPage = (productQty, num) => setTotalPages(Math.ceil(productQty / num));
 
 	useEffect(() => {
 		if (currentPage === 1) {
@@ -164,7 +156,7 @@ function AppW3() {
 				previous: false,
 				next: true,
 			})
-		} else if (currentPage === pages) {
+		} else if (currentPage === totalPages) {
 			setPageState({
 				previous: true,
 				next: false,
@@ -230,10 +222,9 @@ function AppW3() {
 					</div>
 					{/* pagination */}
 					<Pagination
-						switchCurrentPage={switchCurrentPage}
 						setCurrentPage={setCurrentPage}
 						pageState={pageState}
-						pages={pages}
+						totalPages={totalPages}
 						currentPage={currentPage}
 					/>
 				</>

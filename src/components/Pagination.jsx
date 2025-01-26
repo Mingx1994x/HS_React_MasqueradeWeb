@@ -1,4 +1,13 @@
-const Pagination = ({ switchCurrentPage, setCurrentPage, pageState, pages, currentPage }) => {
+const Pagination = ({ setCurrentPage, pageState, totalPages, currentPage }) => {
+
+	const switchCurrentPage = (mode) => {
+		if (mode === 'next') {
+			setCurrentPage(currentPage + 1)
+		} else {
+			setCurrentPage(currentPage - 1)
+		}
+	}
+
 	return (
 		<nav>
 			<ul className="pagination justify-content-start">
@@ -8,7 +17,7 @@ const Pagination = ({ switchCurrentPage, setCurrentPage, pageState, pages, curre
 						switchCurrentPage('prev')
 					}}>Previous</a>
 				</li>
-				{[...Array(pages).keys()].map(page =>
+				{[...Array(totalPages).keys()].map(page =>
 
 				(<li className={`page-item ${page + 1 === currentPage && 'active'}`} key={page}>
 					<a className="page-link" href="#" onClick={(e) => {
