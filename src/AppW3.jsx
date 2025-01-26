@@ -31,6 +31,7 @@ function AppW3() {
 	const [tempData, setTempData] = useState(defaultData);
 	const listNum = 9;
 
+	const sortPage = (productQty, num) => setTotalPages(Math.ceil(productQty / num));
 	const getProductsData = async () => {
 		try {
 			const res = await axios.get(`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/products/all`);
@@ -109,25 +110,7 @@ function AppW3() {
 	const [pageState, setPageState] = useState({})
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const sortPage = (productQty, num) => setTotalPages(Math.ceil(productQty / num));
-
 	useEffect(() => {
-		if (currentPage === 1) {
-			setPageState({
-				previous: false,
-				next: true,
-			})
-		} else if (currentPage === totalPages) {
-			setPageState({
-				previous: true,
-				next: false,
-			})
-		} else {
-			setPageState({
-				previous: true,
-				next: true,
-			})
-		}
 		setProducts(sortProductsData(allProducts, currentPage))
 	}, [currentPage])
 
@@ -187,6 +170,7 @@ function AppW3() {
 					<Pagination
 						setCurrentPage={setCurrentPage}
 						pageState={pageState}
+						setPageState={setPageState}
 						totalPages={totalPages}
 						currentPage={currentPage}
 					/>
