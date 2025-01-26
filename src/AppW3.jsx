@@ -57,9 +57,11 @@ function AppW3() {
 		return (productsGroup[page - 1]);
 	}
 
-	const initProductsData = () => {
+	const initState = () => {
 		setProducts(null);
 		setTempData(defaultData);
+		setCurrentPage(1);
+		setPageState(null);
 	}
 
 	const signin = async () => {
@@ -104,7 +106,7 @@ function AppW3() {
 			getProductsData();
 		} catch (error) {
 			setIsLogin(false);
-			initProductsData();
+			initState();
 		}
 	}
 
