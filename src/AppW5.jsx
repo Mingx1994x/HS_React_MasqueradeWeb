@@ -5,7 +5,9 @@ const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 
 function AppW5() {
 	const [products, setProducts] = useState([]);
+	const [productsCategory, setProductsCategory] = useState([]);
 	const [cartsData, setCartsData] = useState([]);
+
 	const getProducts = async () => {
 		try {
 			const res = await axios.get(
@@ -13,10 +15,14 @@ function AppW5() {
 			);
 			console.log(res);
 			setProducts(res.data.products);
+			getCategory(products)
+			setProductsCategory(getCategory(products));
 		} catch (error) {
 			console.log(error);
 		}
 	};
+
+	const getCategory = (products) => products.map(product => product.category);
 
 	const getCarts = async () => {
 		try {
@@ -33,6 +39,7 @@ function AppW5() {
 	useEffect(() => {
 		getProducts();
 		getCarts();
+		// console.log(productsCategory);
 	}, []);
 
 	return (
@@ -42,12 +49,18 @@ function AppW5() {
 					<div className="col-md-10">
 						<section className="section productDisplay">
 							<h2 className="section-title text-center">商品列表</h2>
-							{/* <select name="" class="productSelect">
-								<option value="全部" selected>全部</option>
-								<option value="床架">床架</option>
-								<option value="收納">收納</option>
-								<option value="窗簾">窗簾</option>
-							</select> */}
+							<div className="my-2 row">
+								<div className="col-md-3">
+									<select name="" className="form-select">
+										<option value="全部" selected>全部</option>
+										{
+											productsCategory.map(category => (
+												<option value="床架">{category}</option>
+											))
+										}
+									</select>
+								</div>
+							</div>
 							<ul className="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
 								{
 									products.map(product => {
