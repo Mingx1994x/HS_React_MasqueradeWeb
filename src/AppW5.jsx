@@ -4,6 +4,7 @@ import axios from "axios";
 import { Modal } from "bootstrap";
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
+const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
 
 function AppW5() {
 	const [products, setProducts] = useState([]);
@@ -23,9 +24,10 @@ function AppW5() {
 	};
 	const [tempProduct, setTempProduct] = useState(defaultData);
 	const [tempQty, setTempQty] = useState(1);
-	const [cartsData, setCartsData] = useState([]);
-	const [productsCategory, setProductsCategory] = useState([]);
+	const [cartsData, setCartsData] = useState({});
+	// const [productsCategory, setProductsCategory] = useState([]);
 
+	//取得產品列表資料
 	const getProducts = async () => {
 		try {
 			const res = await axios.get(
@@ -40,20 +42,36 @@ function AppW5() {
 		}
 	};
 
-	const getCategory = (products) => products.map(product => product.category);
+	// const getCategory = (products) => products.map(product => product.category);
 
+	//取得購物車資料
 	const getCarts = async () => {
 		try {
-			const res = await axios.get(
-				`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/cart`
-			);
-			// console.log(res);
+			const res = await axios.get(`${customerUrl}/cart`);
+			console.log(res);
 			setCartsData(res.data.data);
 		} catch (error) {
 			// console.log(error);
 		}
 	};
 
+	//新增購物車
+	const addCarts = async (id, qty = 1) => {
+		try {
+			const res = await axios.post(`${customerUrl}/cart`, {
+				data: {
+					product_id: id,
+					qty
+				}
+			});
+			console.log(res);
+			getCarts();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	//Modal
 	const productCardModal = useRef(null)
 	const productCardModalRef = useRef(null);
 	const openModal = (product) => {
@@ -67,10 +85,12 @@ function AppW5() {
 		setTempQty(1);
 	}
 
+
 	useEffect(() => {
 		getProducts();
 		getCarts();
 		// console.log(productsCategory);
+		console.log(cartsData);
 	}, []);
 
 	return (
@@ -116,7 +136,9 @@ function AppW5() {
 													</div>
 													<div className="card-footer d-flex justify-content-center">
 														<button type="button" className="btn btn-outline-primary rounded-end-0" onClick={() => openModal(product)}>查看細節</button>
-														<button type="button" className="btn btn-outline-danger rounded-start-0">加入購物車</button>
+														<button type="button" className="btn btn-outline-danger rounded-start-0" onClick={() => {
+															addCarts(id)
+														}}>加入購物車</button>
 													</div>
 												</div>
 											</li>
@@ -170,25 +192,56 @@ function AppW5() {
 							<div className="row d-flex justify-content-center">
 								<div className="col-12">
 									<h2 className="section-title text-center">我的購物車</h2>
+									<div className="d-flex">
+										<button className="btn btn-danger ms-auto">清空購物車</button>
+									</div>
 									<table className="shoppingCart-table table">
 										<thead className="cartHead">
 											<tr>
-												<th width="20%">品項</th>
-												<th width="25%">數量/單位</th>
-												<th width="25%">單價</th>
-												<th width="30%"></th>
+												<th width="25%" className="text-center">品項</th>
+												<th width="20%" className="text-center">品名</th>
+												<th width="25%" className="text-center">數量/單位</th>
+												<th width="15%">單價</th>
+												<th width="15%"></th>
 											</tr>
 										</thead>
-										<tbody className="cartBody"></tbody>
+										<tbody className="cartBody">
+											{cartsData?.carts.map(cart => {
+												const { id, product, qty, total } = cart;
+												return (
+													<tr key={id}>
+														<td>
+															<div className="d-flex">
+																<img src={product.imageUrl} className="object-fit-cover mx-auto" style={{
+																	height: '200px'
+																}} alt={product.title} />
+															</div>
+														</td>
+														<td className="text-center">{product.title}</td>
+														<td className="text-center">
+															<button type="button" className="btn btn-sm btn-outline-secondary ms-3">-</button>
+															<span className="mx-2">{qty}</span>
+															<button type="button" className="btn btn-sm btn-outline-warning">+</button>
+															<span className="ms-2">{`/${product.unit}`}</span>
+														</td>
+														<td>{product.price}</td>
+														<td><button className="btn btn-danger">移除</button></td>
+													</tr>
+												)
+											})}
+										</tbody>
 										<tfoot className="cartFoot">
 											<tr>
-												<td colSpan={3}></td>
-												<td>總計</td>
+												<td colSpan={2}></td>
+												<td className="text-end">總計</td>
+												<td>{cartsData?.final_total}</td>
+												<td></td>
 											</tr>
-											<tr>
+											{/* <tr>
 												<td colSpan={3}></td>
 												<td>折扣價</td>
-											</tr>
+												<td></td>
+											</tr> */}
 										</tfoot>
 									</table>
 								</div>
