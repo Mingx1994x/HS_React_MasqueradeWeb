@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import axios from "axios";
 import { Modal } from "bootstrap";
+import { useForm } from "react-hook-form";
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
@@ -25,6 +26,8 @@ function AppW5() {
 	const [tempProduct, setTempProduct] = useState(defaultData);
 	const [tempQty, setTempQty] = useState(1);
 	const [cartsData, setCartsData] = useState({});
+
+	const [cartStatus, setCartStatus] = useState(false);
 	// const [productsCategory, setProductsCategory] = useState([]);
 
 	//取得產品列表資料
@@ -51,16 +54,53 @@ function AppW5() {
 			console.log(res);
 			setCartsData(res.data.data);
 		} catch (error) {
-			// console.log(error);
+			console.log(error);
 		}
 	};
 
 	//新增購物車
-	const addCarts = async (id, qty = 1) => {
+	const addCarts = async (product_id, qty = 1) => {
 		try {
 			const res = await axios.post(`${customerUrl}/cart`, {
 				data: {
-					product_id: id,
+					product_id,
+					qty
+				}
+			});
+			console.log(res);
+			getCarts();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	//刪除購物車產品
+	const removeSingleCart = async (id) => {
+		try {
+			const res = await axios.delete(`${customerUrl}/cart/${id}`);
+			console.log(res);
+			getCarts();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	//清空購物車
+	const removeCarts = async () => {
+		try {
+			const res = await axios.delete(`${customerUrl}/carts`);
+			console.log(res);
+			getCarts();
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	//更新購物車
+	const updateCart = async (id, product_id, qty) => {
+		try {
+			const res = await axios.put(`${customerUrl}/cart/${id}`, {
+				data: {
+					product_id,
 					qty
 				}
 			});
@@ -85,13 +125,27 @@ function AppW5() {
 		setTempQty(1);
 	}
 
+	const { register, handleSubmit, formState: { errors } } = useForm();
+
+	const onSubmit = (data) => {
+		console.log(data);
+
+	}
+
 
 	useEffect(() => {
 		getProducts();
 		getCarts();
 		// console.log(productsCategory);
-		console.log(cartsData);
 	}, []);
+
+	useEffect(() => {
+		if (cartsData?.carts?.length !== 0) {
+			setCartStatus(true);
+		} else {
+			setCartStatus(false);
+		}
+	}, [cartsData])
 
 	return (
 		<>
@@ -182,75 +236,90 @@ function AppW5() {
 										</button>
 										<button
 											type="button"
-											className="btn btn-danger">加入購物車
+											className="btn btn-danger" onClick={() => {
+												addCarts(tempProduct.id, tempQty);
+												closeModal()
+											}}>加入購物車
 										</button>
 									</div>
 								</div>
 							</div>
 						</div>
-						<section className="section shoppingCart">
-							<div className="row d-flex justify-content-center">
-								<div className="col-12">
-									<h2 className="section-title text-center">我的購物車</h2>
-									<div className="d-flex">
-										<button className="btn btn-danger ms-auto">清空購物車</button>
-									</div>
-									<table className="shoppingCart-table table">
-										<thead className="cartHead">
-											<tr>
-												<th width="25%" className="text-center">品項</th>
-												<th width="20%" className="text-center">品名</th>
-												<th width="25%" className="text-center">數量/單位</th>
-												<th width="15%">單價</th>
-												<th width="15%"></th>
-											</tr>
-										</thead>
-										<tbody className="cartBody">
-											{cartsData?.carts.map(cart => {
-												const { id, product, qty, total } = cart;
-												return (
-													<tr key={id}>
-														<td>
-															<div className="d-flex">
-																<img src={product.imageUrl} className="object-fit-cover mx-auto" style={{
-																	height: '200px'
-																}} alt={product.title} />
-															</div>
-														</td>
-														<td className="text-center">{product.title}</td>
-														<td className="text-center">
-															<button type="button" className="btn btn-sm btn-outline-secondary ms-3">-</button>
-															<span className="mx-2">{qty}</span>
-															<button type="button" className="btn btn-sm btn-outline-warning">+</button>
-															<span className="ms-2">{`/${product.unit}`}</span>
-														</td>
-														<td>{product.price}</td>
-														<td><button className="btn btn-danger">移除</button></td>
-													</tr>
-												)
-											})}
-										</tbody>
-										<tfoot className="cartFoot">
-											<tr>
-												<td colSpan={2}></td>
-												<td className="text-end">總計</td>
-												<td>{cartsData?.final_total}</td>
-												<td></td>
-											</tr>
-											{/* <tr>
+						{cartStatus ? (
+							<section className="section shoppingCart">
+								<div className="row d-flex justify-content-center">
+									<div className="col-12">
+										<h2 className="section-title text-center">我的購物車</h2>
+										<div className="d-flex">
+											<button className="btn btn-danger ms-auto" onClick={removeCarts}>清空購物車</button>
+										</div>
+										<table className="shoppingCart-table table">
+											<thead className="cartHead">
+												<tr>
+													<th width="25%" className="text-center">品項</th>
+													<th width="20%" className="text-center">品名</th>
+													<th width="25%" className="text-center">數量/單位</th>
+													<th width="15%">單價</th>
+													<th width="15%"></th>
+												</tr>
+											</thead>
+											<tbody className="cartBody">
+												{cartsData?.carts?.map(cart => {
+													const { id, product_id, product, qty } = cart;
+													return (
+														<tr key={id}>
+															<td>
+																<div className="d-flex">
+																	<img src={product.imageUrl} className="object-fit-cover mx-auto" style={{
+																		height: '200px'
+																	}} alt={product.title} />
+																</div>
+															</td>
+															<td className="text-center">{product.title}</td>
+															<td className="text-center">
+																<button type="button" className="btn btn-sm btn-outline-secondary ms-3" onClick={() => {
+																	if (qty === 1) {
+																		removeSingleCart(id)
+																	} else {
+																		updateCart(id, product_id, qty - 1);
+																	}
+																}}>-</button>
+																<span className="mx-2">{qty}</span>
+																<button type="button" className="btn btn-sm btn-outline-warning" onClick={() => {
+																	updateCart(id, product_id, qty + 1)
+																}}>+</button>
+																<span className="ms-2">{`/${product.unit}`}</span>
+															</td>
+															<td>{product.price}</td>
+															<td><button className="btn btn-danger" onClick={() => {
+																removeSingleCart(id);
+															}}>移除商品</button></td>
+														</tr>
+													)
+												})}
+											</tbody>
+											<tfoot className="cartFoot">
+												<tr>
+													<td colSpan={2}></td>
+													<td className="text-end">總計</td>
+													<td>{cartsData?.final_total}</td>
+													<td></td>
+												</tr>
+												{/* <tr>
 												<td colSpan={3}></td>
 												<td>折扣價</td>
 												<td></td>
 											</tr> */}
-										</tfoot>
-									</table>
+											</tfoot>
+										</table>
+									</div>
 								</div>
-							</div>
-						</section>
+							</section>
+						) : ''}
 						<section className="section orderInfo">
 							<div className="row d-flex justify-content-center">
 								<div className="col-6">
-									<form action="" className="orderInfo-form">
+									<form onSubmit={handleSubmit(onSubmit)} className="orderInfo-form">
 										<h2 className="section-title text-center">填寫預訂資料</h2>
 										<div className="mb-3">
 											<label htmlFor="customerEmail" className="form-label">
@@ -258,11 +327,21 @@ function AppW5() {
 											</label>
 											<input
 												type="email"
-												className="form-control"
+												className={`form-control ${errors?.Email ? 'is-invalid' : ''}`}
 												id="customerEmail"
 												placeholder="請輸入 Email"
 												name="Email"
+												{...register('Email', {
+													required: 'Email為必填欄位',
+													pattern: {
+														value: /^\S+@\S+$/i,
+														message: 'Email欄位填寫格式錯誤'
+													}
+												})}
 											/>
+											{errors?.Email && (
+												<div className='invalid-feedback'>{errors?.Email?.message}</div>
+											)}
 										</div>
 										<div className="mb-3">
 											<label htmlFor="customerName" className="form-label">
@@ -270,11 +349,19 @@ function AppW5() {
 											</label>
 											<input
 												type="text"
-												className="form-control"
+												className={`form-control ${errors?.name ? 'is-invalid' : ''}`}
 												id="customerName"
 												placeholder="請輸入姓名"
-												name="姓名"
+												name="name"
+												{...register('name', {
+													required: '姓名為必填欄位',
+												})}
 											/>
+											{errors?.name && (
+												<div className="invalid-feedback">
+													{errors.name.message}
+												</div>
+											)}
 										</div>
 										<div className="mb-3">
 											<label htmlFor="customerPhone" className="form-label">
@@ -282,11 +369,25 @@ function AppW5() {
 											</label>
 											<input
 												type="tel"
-												className="form-control"
+												className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
 												id="customerPhone"
-												placeholder="請輸入電話"
-												name="電話"
+												placeholder="請輸入手機"
+												name="phone"
+												{...register('phone', {
+													required: '手機為必填欄位',
+													pattern: {
+														value: /^09\d{2}-\d{3}-\d{3}$/i,
+														message: '手機欄位填寫格式錯誤'
+													}
+												})}
 											/>
+											{
+												errors?.phone && (
+													<div className="invalid-feedback">
+														{errors.phone.message}
+													</div>
+												)
+											}
 										</div>
 										<div className="mb-3">
 											<label htmlFor="customerAddress" className="form-label">
@@ -294,11 +395,21 @@ function AppW5() {
 											</label>
 											<input
 												type="text"
-												className="form-control"
+												className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
 												id="customerAddress"
 												placeholder="請輸入寄送地址"
-												name="寄送地址"
+												name="address"
+												{...register('address', {
+													required: '地址為必填欄位'
+												})}
 											/>
+											{
+												errors?.address && (
+													<div className="invalid-feedback">
+														{errors.address.message}
+													</div>
+												)
+											}
 										</div>
 										<div className="d-flex justify-content-center">
 											<input
