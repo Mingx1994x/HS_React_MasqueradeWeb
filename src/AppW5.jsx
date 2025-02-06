@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 import { useForm } from "react-hook-form";
+import HashLoader from "react-spinners/HashLoader"
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
@@ -26,10 +27,9 @@ function AppW5() {
 	const [tempProduct, setTempProduct] = useState(defaultData);
 	const [tempQty, setTempQty] = useState(1);
 	const [cartsData, setCartsData] = useState({});
-
 	const [cartStatus, setCartStatus] = useState(false);
 	// const [productsCategory, setProductsCategory] = useState([]);
-
+	const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
 	//取得產品列表資料
 	const getProducts = async () => {
 		try {
@@ -60,6 +60,7 @@ function AppW5() {
 
 	//新增購物車
 	const addCarts = async (product_id, qty = 1) => {
+		setFullScreenLoadingState(true);
 		try {
 			const res = await axios.post(`${customerUrl}/cart`, {
 				data: {
@@ -71,6 +72,8 @@ function AppW5() {
 			getCarts();
 		} catch (error) {
 			console.log(error);
+		} finally {
+			setFullScreenLoadingState(false);
 		}
 	}
 	//刪除購物車產品
@@ -365,13 +368,13 @@ function AppW5() {
 										</div>
 										<div className="mb-3">
 											<label htmlFor="customerPhone" className="form-label">
-												電話
+												手機
 											</label>
 											<input
 												type="tel"
 												className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
 												id="customerPhone"
-												placeholder="請輸入手機"
+												placeholder="請輸入手機號碼"
 												name="phone"
 												{...register('phone', {
 													required: '手機為必填欄位',
@@ -424,6 +427,28 @@ function AppW5() {
 						</section>
 					</div>
 				</div>
+				{
+					fullScreenLoadingState && (
+						<div className="d-flex align-items-center justify-content-center"
+							style={{
+								position: "fixed",
+								top: 0,
+								bottom: 0,
+								left: 0,
+								right: 0,
+								zIndex: 1000,
+								backgroundColor: 'rgba(255,255,255,0.3)',
+								backdropFilter: 'blur(3px)'
+							}} >
+							<HashLoader
+								color={'#000'}
+								size={80}
+								aria-label="Loading Spinner"
+								data-testid="loader"
+							/>
+						</div>
+					)
+				}
 			</div>
 		</>
 	);
