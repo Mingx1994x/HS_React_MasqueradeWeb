@@ -30,6 +30,7 @@ function AppW5() {
 	const [cartStatus, setCartStatus] = useState(false);
 	// const [productsCategory, setProductsCategory] = useState([]);
 	const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
+	const [listLoadingState, setListLoadingState] = useState([]);
 	//取得產品列表資料
 	const getProducts = async () => {
 		try {
@@ -78,28 +79,35 @@ function AppW5() {
 	}
 	//刪除購物車產品
 	const removeSingleCart = async (id) => {
+		setListLoadingState(prev => [...prev, id])
 		try {
 			const res = await axios.delete(`${customerUrl}/cart/${id}`);
 			console.log(res);
 			getCarts();
 		} catch (error) {
 			console.log(error);
+		} finally {
+			setFullScreenLoadingState(false);
 		}
 	}
 
 	//清空購物車
 	const removeCarts = async () => {
+		setFullScreenLoadingState(true);
 		try {
 			const res = await axios.delete(`${customerUrl}/carts`);
 			console.log(res);
 			getCarts();
 		} catch (error) {
 			console.log(error);
+		} finally {
+			setFullScreenLoadingState(false);
 		}
 	}
 
 	//更新購物車
 	const updateCart = async (id, product_id, qty) => {
+		setListLoadingState(prev => [...prev, id])
 		try {
 			const res = await axios.put(`${customerUrl}/cart/${id}`, {
 				data: {
@@ -111,6 +119,11 @@ function AppW5() {
 			getCarts();
 		} catch (error) {
 			console.log(error);
+		} finally {
+			setListLoadingState(prev => {
+				return prev.filter(item => item !== id)
+			})
+
 		}
 	}
 
@@ -132,9 +145,7 @@ function AppW5() {
 
 	const onSubmit = (data) => {
 		console.log(data);
-
 	}
-
 
 	useEffect(() => {
 		getProducts();
@@ -225,11 +236,11 @@ function AppW5() {
 											購買數量：
 											<button type="button" className="btn btn-sm btn-outline-secondary ms-3" disabled={tempQty === 1 ? true : false} onClick={() => {
 												setTempQty(tempQty - 1)
-											}}>-</button>
+											}}><i class="bi bi-dash fs-5"></i></button>
 											<span className="mx-2">{tempQty}</span>
 											<button type="button" className="btn btn-sm btn-outline-warning" onClick={() => {
 												setTempQty(tempQty + 1)
-											}}>+</button>
+											}}><i class="bi bi-plus fs-5"></i></button>
 										</div>
 									</div>
 									<div className="modal-footer">
@@ -261,9 +272,9 @@ function AppW5() {
 												<tr>
 													<th width="25%" className="text-center">品項</th>
 													<th width="20%" className="text-center">品名</th>
-													<th width="25%" className="text-center">數量/單位</th>
+													<th width="30%" className="text-center">數量/單位</th>
 													<th width="15%">單價</th>
-													<th width="15%"></th>
+													<th width="10%"></th>
 												</tr>
 											</thead>
 											<tbody className="cartBody">
@@ -280,23 +291,75 @@ function AppW5() {
 															</td>
 															<td className="text-center">{product.title}</td>
 															<td className="text-center">
-																<button type="button" className="btn btn-sm btn-outline-secondary ms-3" onClick={() => {
-																	if (qty === 1) {
-																		removeSingleCart(id)
-																	} else {
-																		updateCart(id, product_id, qty - 1);
+																<button
+																	type="button"
+																	className="btn btn-sm btn-outline-secondary ms-3"
+																	onClick={() => {
+																		if (qty === 1) {
+																			removeSingleCart(id)
+																		} else {
+																			updateCart(id, product_id, qty - 1);
+																		}
+																	}}
+																	disabled={
+																		listLoadingState.includes(id)
 																	}
-																}}>-</button>
+																>
+																	{
+																		listLoadingState.includes(id) ?
+																			(<>
+																				<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																				<span class="visually-hidden" role="status">Loading...</span>
+																			</>)
+																			:
+																			<i class="bi bi-dash fs-6"></i>
+																	}
+																</button>
 																<span className="mx-2">{qty}</span>
-																<button type="button" className="btn btn-sm btn-outline-warning" onClick={() => {
-																	updateCart(id, product_id, qty + 1)
-																}}>+</button>
+																<button
+																	type="button"
+																	className="btn btn-sm btn-outline-warning"
+																	onClick={() => {
+																		updateCart(id, product_id, qty + 1)
+																	}}
+																	disabled={
+																		listLoadingState.includes(id)
+																	}
+																>
+																	{
+																		listLoadingState.includes(id) ?
+																			(<>
+																				<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																				<span class="visually-hidden" role="status">Loading...</span>
+																			</>)
+																			:
+																			<i class="bi bi-plus fs-6"></i>
+																	}
+																</button>
 																<span className="ms-2">{`/${product.unit}`}</span>
 															</td>
 															<td>{product.price}</td>
-															<td><button className="btn btn-danger" onClick={() => {
-																removeSingleCart(id);
-															}}>移除商品</button></td>
+															<td>
+																<button
+																	className="btn btn-outline-danger"
+																	onClick={() => {
+																		removeSingleCart(id);
+																	}}
+																	disabled={
+																		listLoadingState.includes(id)
+																	}
+																>
+																	{listLoadingState.includes(id) ? (
+																		<>
+																			<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																			<span class="visually-hidden" role="status">Loading...</span>
+																		</>
+																	) :
+																		<i class="bi bi-trash"></i>
+																	}
+
+																</button>
+															</td>
 														</tr>
 													)
 												})}
