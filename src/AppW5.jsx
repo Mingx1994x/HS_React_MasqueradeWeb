@@ -138,10 +138,29 @@ function AppW5() {
 		setTempQty(1);
 	}
 
-	const { register, handleSubmit, formState: { errors } } = useForm();
+	const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-	const onSubmit = (data) => {
-		console.log(data);
+	//submitOrder
+	const submitOrder = async (data) => {
+		console.log('submit', data);
+		const { email, name, tel, address } = data;
+		try {
+			const res = await axios.post(`${customerUrl}/order`, {
+				data: {
+					user: {
+						name,
+						email,
+						tel,
+						address
+					},
+					message: '這是留言'
+				}
+			})
+			alert(res.data.message);
+			reset();
+		} catch (error) {
+			alert(error.response.data.message);
+		}
 	}
 
 	useEffect(() => {
@@ -382,28 +401,28 @@ function AppW5() {
 						<section className="section orderInfo">
 							<div className="row d-flex justify-content-center">
 								<div className="col-6">
-									<form onSubmit={handleSubmit(onSubmit)} className="orderInfo-form">
+									<form onSubmit={handleSubmit(submitOrder)} className="orderInfo-form">
 										<h2 className="section-title text-center">填寫預訂資料</h2>
 										<div className="mb-3">
 											<label htmlFor="customerEmail" className="form-label">
-												Email
+												信箱
 											</label>
 											<input
 												type="email"
-												className={`form-control ${errors?.Email ? 'is-invalid' : ''}`}
+												className={`form-control ${errors?.email ? 'is-invalid' : ''}`}
 												id="customerEmail"
-												placeholder="請輸入 Email"
-												name="Email"
-												{...register('Email', {
-													required: 'Email為必填欄位',
+												placeholder="請輸入信箱"
+												name="email"
+												{...register('email', {
+													required: '信箱為必填欄位',
 													pattern: {
 														value: /^\S+@\S+$/i,
-														message: 'Email欄位填寫格式錯誤'
+														message: '信箱欄位填寫格式錯誤'
 													}
 												})}
 											/>
-											{errors?.Email && (
-												<div className='invalid-feedback'>{errors?.Email?.message}</div>
+											{errors?.email && (
+												<div className='invalid-feedback'>{errors?.email?.message}</div>
 											)}
 										</div>
 										<div className="mb-3">
@@ -427,27 +446,27 @@ function AppW5() {
 											)}
 										</div>
 										<div className="mb-3">
-											<label htmlFor="customerPhone" className="form-label">
-												手機
+											<label htmlFor="customerTel" className="form-label">
+												手機(ex: 0912345678)
 											</label>
 											<input
 												type="tel"
-												className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
-												id="customerPhone"
+												className={`form-control ${errors?.tel ? 'is-invalid' : ''}`}
+												id="customerTel"
 												placeholder="請輸入手機號碼"
-												name="phone"
-												{...register('phone', {
+												name="tel"
+												{...register('tel', {
 													required: '手機為必填欄位',
 													pattern: {
-														value: /^09\d{2}-\d{3}-\d{3}$/i,
+														value: /^09\d{8}/i,
 														message: '手機欄位填寫格式錯誤'
 													}
 												})}
 											/>
 											{
-												errors?.phone && (
+												errors?.tel && (
 													<div className="invalid-feedback">
-														{errors.phone.message}
+														{errors.tel.message}
 													</div>
 												)
 											}
@@ -458,7 +477,7 @@ function AppW5() {
 											</label>
 											<input
 												type="text"
-												className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
+												className={`form-control ${errors?.address ? 'is-invalid' : ''}`}
 												id="customerAddress"
 												placeholder="請輸入寄送地址"
 												name="address"
