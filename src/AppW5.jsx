@@ -252,11 +252,11 @@ function AppW5() {
 											購買數量：
 											<button type="button" className="btn btn-sm btn-outline-secondary ms-3" disabled={tempQty === 1 ? true : false} onClick={() => {
 												setTempQty(tempQty - 1)
-											}}><i class="bi bi-dash fs-5"></i></button>
+											}}><i className="bi bi-dash fs-5"></i></button>
 											<span className="mx-2">{tempQty}</span>
 											<button type="button" className="btn btn-sm btn-outline-warning" onClick={() => {
 												setTempQty(tempQty + 1)
-											}}><i class="bi bi-plus fs-5"></i></button>
+											}}><i className="bi bi-plus fs-5"></i></button>
 										</div>
 									</div>
 									<div className="modal-footer">
@@ -324,11 +324,11 @@ function AppW5() {
 																	{
 																		listLoadingState.includes(id) ?
 																			(<>
-																				<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-																				<span class="visually-hidden" role="status">Loading...</span>
+																				<span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																				<span className="visually-hidden" role="status">Loading...</span>
 																			</>)
 																			:
-																			<i class="bi bi-dash fs-6"></i>
+																			<i className="bi bi-dash fs-6"></i>
 																	}
 																</button>
 																<span className="mx-2">{qty}</span>
@@ -345,11 +345,11 @@ function AppW5() {
 																	{
 																		listLoadingState.includes(id) ?
 																			(<>
-																				<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-																				<span class="visually-hidden" role="status">Loading...</span>
+																				<span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																				<span className="visually-hidden" role="status">Loading...</span>
 																			</>)
 																			:
-																			<i class="bi bi-plus fs-6"></i>
+																			<i className="bi bi-plus fs-6"></i>
 																	}
 																</button>
 																<span className="ms-2">{`/${product.unit}`}</span>
@@ -367,11 +367,11 @@ function AppW5() {
 																>
 																	{listLoadingState.includes(id) ? (
 																		<>
-																			<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-																			<span class="visually-hidden" role="status">Loading...</span>
+																			<span className="spinner-border spinner-border-sm" aria-hidden="true"></span>
+																			<span className="visually-hidden" role="status">Loading...</span>
 																		</>
 																	) :
-																		<i class="bi bi-trash"></i>
+																		<i className="bi bi-trash"></i>
 																	}
 
 																</button>
