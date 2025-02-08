@@ -4,6 +4,7 @@ import axios from "axios";
 import { Modal } from "bootstrap";
 import { useForm } from "react-hook-form";
 import HashLoader from "react-spinners/HashLoader"
+import ProductCard from "./components/ProductCard";
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
@@ -233,39 +234,16 @@ function AppW5() {
 							</div>
 							<ul className="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
 								{
-									products.map(product => {
-										const { id, title, imageUrl, origin_price, description, price, category } = product;
-										return (
-											<li className="col" key={id}>
-												<div
-													className="productCard card"
-													style={{
-														height: "100%"
-													}}
-												>
-													<span className="productCategory text-bg-warning rounded-2">{category}</span>
-													<img
-														src={imageUrl}
-														className="card-img-top object-fit-cover" style={{
-															height: "250px",
-														}}
-														alt={title} />
-													<div className="card-body">
-														<h3 className="card-title">{title}</h3>
-														<p className="card-text"><del>{`價格：${origin_price}`}</del></p>
-														<p className="card-text text-danger">{`特價：${price}`}</p>
-														<p className="card-text text-truncate">{`商品描述：${description}`}</p>
-													</div>
-													<div className="card-footer d-flex justify-content-center">
-														<button type="button" className="btn btn-outline-primary rounded-end-0" onClick={() => openModal(product)}>查看細節</button>
-														<button type="button" className="btn btn-outline-danger rounded-start-0" onClick={() => {
-															addCarts(id)
-														}}>加入購物車</button>
-													</div>
-												</div>
-											</li>
-										)
-									})
+									products.map(product => (
+										<li className="col" key={product.id}>
+											<ProductCard
+												product={product}
+												openModal={openModal}
+												addCarts={addCarts}
+											/>
+										</li>
+									)
+									)
 								}
 							</ul>
 						</section>

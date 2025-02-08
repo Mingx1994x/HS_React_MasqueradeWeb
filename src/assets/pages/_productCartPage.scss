@@ -11,6 +11,7 @@
 .productCard {
   position: relative;
   list-style: none;
+  height: 100%;
 
   .productCategory {
     padding: map-get($spacers, 1);
