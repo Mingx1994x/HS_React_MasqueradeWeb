@@ -236,11 +236,14 @@ function AppW5() {
 									products.map(product => {
 										const { id, title, imageUrl, origin_price, description, price, category } = product;
 										return (
-											<li className="col productItem" key={id}>
-												<span className="productCategory text-bg-warning rounded-2">{category}</span>
-												<div className="card" style={{
-													height: "100%"
-												}}>
+											<li className="col" key={id}>
+												<div
+													className="productCard card"
+													style={{
+														height: "100%"
+													}}
+												>
+													<span className="productCategory text-bg-warning rounded-2">{category}</span>
 													<img
 														src={imageUrl}
 														className="card-img-top object-fit-cover" style={{
