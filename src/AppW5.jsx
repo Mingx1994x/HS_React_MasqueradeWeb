@@ -143,7 +143,7 @@ function AppW5() {
 	//submitOrder
 	const submitOrder = async (data) => {
 		console.log('submit', data);
-		const { email, name, tel, address } = data;
+		const { email, name, tel, address, message } = data;
 		try {
 			const res = await axios.post(`${customerUrl}/order`, {
 				data: {
@@ -153,7 +153,7 @@ function AppW5() {
 						tel,
 						address
 					},
-					message: '這是留言'
+					message
 				}
 			})
 			alert(res.data.message);
@@ -458,7 +458,7 @@ function AppW5() {
 												{...register('tel', {
 													required: '手機為必填欄位',
 													pattern: {
-														value: /^09\d{8}/i,
+														value: /^09\d{8}$/i,
 														message: '手機欄位填寫格式錯誤'
 													}
 												})}
@@ -489,6 +489,29 @@ function AppW5() {
 												errors?.address && (
 													<div className="invalid-feedback">
 														{errors.address.message}
+													</div>
+												)
+											}
+										</div>
+										<div className="mb-3">
+											<label htmlFor="customerMessage" className="form-label">留言</label>
+											<textarea
+												className={`form-control ${errors?.message ? 'is-invalid' : ''}`}
+												id="customerMessage"
+												rows="3"
+												placeholder="留言區(留言請在30字以內)..."
+												name="message"
+												{...register('message', {
+													maxLength: {
+														value: 30,
+														message: '留言超過字數限制'
+													}
+												})}
+											></textarea>
+											{
+												errors?.message && (
+													<div className="invalid-feedback">
+														{errors.message.message}
 													</div>
 												)
 											}
