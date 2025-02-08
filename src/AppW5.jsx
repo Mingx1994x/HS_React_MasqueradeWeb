@@ -28,25 +28,49 @@ function AppW5() {
 	const [tempQty, setTempQty] = useState(1);
 	const [cartsData, setCartsData] = useState({});
 	const [cartStatus, setCartStatus] = useState(false);
-	// const [productsCategory, setProductsCategory] = useState([]);
+	const [selectState, setSelectState] = useState('');
+	const [productsCategory, setProductsCategory] = useState([]);
 	const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
 	const [listLoadingState, setListLoadingState] = useState([]);
-	//取得產品列表資料
-	const getProducts = async () => {
+
+	//取得全部產品列表資料
+	const getProductsAll = async () => {
 		try {
 			const res = await axios.get(
-				`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/products?page=2`
+				`${customerUrl}/products/all`
+			);
+			console.log('get產品ALL', res);
+			setProducts(res.data.products);
+			getCategory(res.data.products);
+		} catch (error) {
+			// console.error(error);
+			alert('系統出現問題，請洽管理人員');
+		}
+	}
+
+	const getCategory = (products) => {
+		let categories = []
+		products.forEach(product => {
+			if (!categories.includes(product.category)) {
+				categories.push(product.category)
+			}
+		});
+		console.log('categories', categories);
+		setProductsCategory(categories);
+	}
+
+	//取得特定產品列表資料
+	const getProducts = async (category) => {
+		try {
+			const res = await axios.get(
+				`${VITE_APP_BaseUrl}/api/${VITE_APP_API}/products?category=${category}`
 			);
 			console.log(res);
 			setProducts(res.data.products);
-			getCategory(products)
-			setProductsCategory(getCategory(products));
 		} catch (error) {
-			// console.log(error);
+			console.log(error);
 		}
 	};
-
-	// const getCategory = (products) => products.map(product => product.category);
 
 	//取得購物車資料
 	const getCarts = async () => {
@@ -124,23 +148,10 @@ function AppW5() {
 		}
 	}
 
-	//Modal
-	const productCardModal = useRef(null)
-	const productCardModalRef = useRef(null);
-	const openModal = (product) => {
-		setTempProduct(product);
-		productCardModal.current = new Modal(productCardModalRef.current);
-		productCardModal.current.show();
-	}
-
-	const closeModal = () => {
-		productCardModal.current.hide();
-		setTempQty(1);
-	}
-
+	// 表單
 	const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-	//submitOrder
+	//表單 submitOrder
 	const submitOrder = async (data) => {
 		console.log('submit', data);
 		const { email, name, tel, address, message } = data;
@@ -163,10 +174,30 @@ function AppW5() {
 		}
 	}
 
+	//Modal
+	const productCardModal = useRef(null)
+	const productCardModalRef = useRef(null);
+	const openModal = (product) => {
+		setTempProduct(product);
+		productCardModal.current = new Modal(productCardModalRef.current);
+		productCardModal.current.show();
+	}
+
+	const closeModal = () => {
+		productCardModal.current.hide();
+		setTempQty(1);
+	}
+
 	useEffect(() => {
-		getProducts();
+		if (selectState === '') {
+			getProductsAll();
+		} else {
+			getProducts(selectState);
+		}
+	}, [selectState])
+
+	useEffect(() => {
 		getCarts();
-		// console.log(productsCategory);
 	}, []);
 
 	useEffect(() => {
@@ -175,7 +206,7 @@ function AppW5() {
 		} else {
 			setCartStatus(false);
 		}
-	}, [cartsData])
+	}, [cartsData]);
 
 	return (
 		<>
@@ -186,14 +217,18 @@ function AppW5() {
 							<h2 className="section-title text-center">商品列表</h2>
 							<div className="my-2 row">
 								<div className="col-md-3">
-									{/* <select name="" className="form-select">
-										<option value="全部" selected>全部</option>
+									<select name="selectCategory"
+										className="form-select"
+										value={selectState}
+										onChange={(e) => setSelectState(e.target.value)}
+									>
+										<option value="">全部</option>
 										{
-											productsCategory.map(category => (
-												<option value="床架">{category}</option>
+											productsCategory.map((category, index) => (
+												<option key={index} value={category}>{category}</option>
 											))
 										}
-									</select> */}
+									</select>
 								</div>
 							</div>
 							<ul className="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
