@@ -87,7 +87,7 @@ function AppW5() {
 		} catch (error) {
 			console.log(error);
 		} finally {
-			setFullScreenLoadingState(false);
+			setListLoadingState(prev => prev.filter(item => item !== id))
 		}
 	}
 
@@ -120,10 +120,7 @@ function AppW5() {
 		} catch (error) {
 			console.log(error);
 		} finally {
-			setListLoadingState(prev => {
-				return prev.filter(item => item !== id)
-			})
-
+			setListLoadingState(prev => prev.filter(item => item !== id))
 		}
 	}
 
