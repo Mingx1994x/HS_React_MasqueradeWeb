@@ -10,10 +10,11 @@ const OrderForm = ({ getCarts }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    mode: "onTouched",
+  });
 
   const submitOrder = async (orderInfo) => {
-    console.log("submit", orderInfo);
     const { email, name, tel, address, message } = orderInfo;
     try {
       const res = await axios.post(`${customerUrl}/order`, {

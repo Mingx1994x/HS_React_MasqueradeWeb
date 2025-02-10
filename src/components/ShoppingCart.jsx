@@ -20,7 +20,6 @@ const ShoppingCart = ({
           qty,
         },
       });
-      console.log(res);
       getCarts();
     } catch (error) {
       alert("系統出現問題，請洽管理人員");
