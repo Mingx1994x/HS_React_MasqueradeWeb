@@ -115,6 +115,22 @@ function AdminProducts() {
     targetModal.show();
   };
 
+  const closeDeleteModal = () => {
+    const deleteModal = Modal.getInstance(deleteModalRef.current);
+    deleteModal.hide();
+    setTempData(defaultData);
+  };
+
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(
+        `${VITE_APP_BaseUrl}/api/${VITE_APP_API}/admin/product/${id}`
+      );
+      getProductsData();
+      closeDeleteModal(deleteModalRef);
+    } catch (error) {}
+  };
+
   //pagination
   const [totalPages, setTotalPages] = useState(null);
   const [pageState, setPageState] = useState({});
@@ -239,9 +255,9 @@ function AdminProducts() {
         modalRef={deleteModalRef}
         title={tempData.title}
         id={tempData.id}
-        setTempData={setTempData}
-        defaultData={defaultData}
-        getProductsData={getProductsData}
+        deleteMode={"single"}
+        closeDeleteModal={closeDeleteModal}
+        deleteMethod={deleteProduct}
       />
     </div>
   );
