@@ -242,7 +242,7 @@ function Products() {
               }
             />
             {/* 訂單表單 */}
-            <OrderForm getCarts={getCarts} />
+            <OrderForm cartStatus={cartStatus} getCarts={getCarts} />
           </div>
         </div>
         {fullScreenLoadingState && <FullScreenLoading />}

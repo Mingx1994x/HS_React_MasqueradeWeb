@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
 
-const OrderForm = ({ getCarts }) => {
+const OrderForm = ({ cartStatus, getCarts }) => {
   const {
     register,
     handleSubmit,
@@ -15,6 +15,10 @@ const OrderForm = ({ getCarts }) => {
   });
 
   const submitOrder = async (orderInfo) => {
+    if (!cartStatus) {
+      alert("尊敬的用戶，您的購物車尚未新增商品項目！");
+      return;
+    }
     const { email, name, tel, address, message } = orderInfo;
     try {
       const res = await axios.post(`${customerUrl}/order`, {
