@@ -1,0 +1,23 @@
+.section {
+  padding-top: map-get($spacers, 2);
+  padding-bottom: map-get($spacers, 2);
+
+  @include media-breakpoint-up(lg) {
+    padding-top: map-get($spacers, 4);
+    padding-bottom: map-get($spacers, 4);
+  }
+}
+
+.productCard {
+  position: relative;
+  list-style: none;
+  height: 100%;
+
+  .productCategory {
+    padding: map-get($spacers, 1);
+    position: absolute;
+    top: 10px;
+    left: -5px;
+    z-index: 1;
+  }
+}
