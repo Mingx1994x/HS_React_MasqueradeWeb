@@ -100,7 +100,7 @@ function Products() {
   };
   //刪除購物車產品
   const removeSingleCart = async (id) => {
-    setListLoadingState((prev) => [...prev, id]);
+    setFullScreenLoadingState(true);
     try {
       const res = await axios.delete(`${customerUrl}/cart/${id}`);
       alert(res.data.message);
@@ -109,7 +109,7 @@ function Products() {
     } catch (error) {
       alert("系統出現問題，請洽管理人員");
     } finally {
-      setListLoadingState((prev) => prev.filter((item) => item !== id));
+      setFullScreenLoadingState(false);
     }
   };
 
