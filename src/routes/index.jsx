@@ -1,21 +1,27 @@
-import AdminLayout from "../layout/AdminLayout";
-import FrontLayout from "../layout/FrontLayout";
-import AdminProducts from "../pages/AdminProducts";
-import Products from "../pages/Products";
+import AdminLayout from '../layout/AdminLayout';
+import FrontLayout from '../layout/FrontLayout';
+import AdminProducts from '../pages/AdminProducts';
+import Login from '../pages/LoginPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import Products from '../pages/Products';
 
 const routes = [
   {
-    path: "/",
+    path: '/',
     element: <FrontLayout />,
     children: [
       {
         index: true,
         element: <Products />,
       },
+      {
+        path: 'login',
+        element: <Login />,
+      },
     ],
   },
   {
-    path: "/admin",
+    path: '/admin',
     element: <AdminLayout />,
     children: [
       {
@@ -23,6 +29,10 @@ const routes = [
         element: <AdminProducts />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ];
 
