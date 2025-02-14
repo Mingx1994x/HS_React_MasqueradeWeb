@@ -1,13 +1,13 @@
-import { NavLink } from "react-router";
+import { NavLink } from 'react-router';
 
 const navRoutes = [
   {
-    title: "首頁",
-    path: "/",
+    title: '首頁',
+    path: '/',
   },
   {
-    title: "管理者登入",
-    path: "/admin",
+    title: '管理者登入',
+    path: '/login',
   },
 ];
 const Navbar = () => {
@@ -36,7 +36,7 @@ const Navbar = () => {
             {navRoutes.map((route, index) => (
               <li
                 className={`nav-item ${
-                  route.title === "管理者登入" ? "ms-auto" : ""
+                  route.title === '管理者登入' ? 'ms-lg-auto' : ''
                 }`}
                 key={index}
               >
