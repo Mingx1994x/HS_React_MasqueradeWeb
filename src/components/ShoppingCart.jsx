@@ -15,7 +15,7 @@ const ShoppingCart = ({
   const updateCart = async (id, product_id, qty) => {
     setListLoadingState((prev) => [...prev, id]);
     try {
-      const res = await axios.put(`${customerUrl}/cart/${id}`, {
+      await axios.put(`${customerUrl}/cart/${id}`, {
         data: {
           product_id,
           qty,
@@ -39,6 +39,7 @@ const ShoppingCart = ({
               onClick={() => {
                 openDeleteModal('', 'all');
               }}
+              disabled={!cartStatus}
             >
               清空購物車
             </button>
