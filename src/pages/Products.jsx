@@ -82,15 +82,6 @@ function Products() {
     }
   };
 
-  //Modal
-  const productCardModal = useRef(null);
-  const productCardModalRef = useRef(null);
-  const openModal = (product) => {
-    setTempProduct(product);
-    productCardModal.current = new Modal(productCardModalRef.current);
-    productCardModal.current.show();
-  };
-
   useEffect(() => {
     if (selectState === '') {
       getProductsAll();
@@ -123,21 +114,11 @@ function Products() {
         <ul className="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
           {products.map((product) => (
             <li className="col" key={product.id}>
-              <ProductCard
-                product={product}
-                openModal={openModal}
-                addCarts={addCarts}
-              />
+              <ProductCard product={product} addCarts={addCarts} />
             </li>
           ))}
         </ul>
       </section>
-      <ProductCardModal
-        tempProduct={tempProduct}
-        modalRef={productCardModalRef}
-        productCardModal={productCardModal}
-        addCarts={addCarts}
-      />
       {fullScreenLoadingState && <FullScreenLoading />}
     </>
   );

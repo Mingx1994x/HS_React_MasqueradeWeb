@@ -5,6 +5,7 @@ import Login from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import Products from '../pages/Products';
 import Carts from '../pages/Carts';
+import ProductDetail from '../pages/ProductDetail';
 const routes = [
   {
     path: '/',
@@ -13,6 +14,10 @@ const routes = [
       {
         index: true,
         element: <Products />,
+      },
+      {
+        path: ':id',
+        element: <ProductDetail />,
       },
       {
         path: 'shoppingCart',
