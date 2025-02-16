@@ -2,12 +2,14 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import FullScreenLoading from '../components/FullScreenLoading';
+import SectionLoading from '../components/SectionLoading';
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
 
 const ProductDetail = () => {
   const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
+  const [sectionLoadingState, setSectionLoadingState] = useState(false);
   const [tempProduct, setTempProduct] = useState(null);
   const [tempQty, setTempQty] = useState(1);
   const { id } = useParams();
@@ -31,11 +33,14 @@ const ProductDetail = () => {
 
   useEffect(() => {
     (async () => {
+      setSectionLoadingState(true);
       try {
         const res = await axios.get(`${customerUrl}/product/${id}`);
         setTempProduct(res.data.product);
       } catch (error) {
         console.log(error);
+      } finally {
+        setSectionLoadingState(false);
       }
     })();
   }, []);
@@ -44,7 +49,7 @@ const ProductDetail = () => {
     <section className="section productDetail">
       <h2 className="section-title text-center mb-4">商品細節</h2>
       <div className="row">
-        <div className="div">
+        <div>
           <Link to="/" className="btn btn-outline-primary ">
             <i className="bi bi-arrow-left"></i>返回
           </Link>
@@ -112,6 +117,7 @@ const ProductDetail = () => {
             </button>
           </div>
         </div>
+        {sectionLoadingState && <SectionLoading />}
       </div>
       {fullScreenLoadingState && <FullScreenLoading />}
     </section>
