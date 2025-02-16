@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
@@ -7,10 +7,12 @@ import DeleteModal from '../components/DeleteModal';
 import ProductModal from '../components/ProductModal';
 import Pagination from '../components/Pagination';
 import { useNavigate } from 'react-router';
+import { LoginStatus } from '../context/LoginContext';
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 
 function AdminProducts() {
+  const { isLogin, setIsLogin } = useContext(LoginStatus);
   const [allProducts, setAllProducts] = useState([]);
   const [products, setProducts] = useState([]);
   let defaultData = {
@@ -70,6 +72,7 @@ function AdminProducts() {
       await axios.post(`${VITE_APP_BaseUrl}/logout`);
       document.cookie = "HexToken='';";
       initState();
+      setIsLogin(false);
       navigate('/login');
     } catch (error) {
       alert(`${error.response.data.message}\n煩請洽管理人員`);
@@ -77,7 +80,12 @@ function AdminProducts() {
   };
 
   useEffect(() => {
-    getProductsData();
+    if (!isLogin) {
+      alert('請先登入唷');
+      navigate('/login');
+    } else {
+      getProductsData();
+    }
   }, []);
 
   const productModalRef = useRef(null);

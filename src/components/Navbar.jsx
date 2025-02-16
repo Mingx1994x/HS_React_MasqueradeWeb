@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router';
+import { LoginStatus } from '../context/LoginContext';
+import { useContext } from 'react';
 
 const navRoutes = [
   {
@@ -9,12 +11,10 @@ const navRoutes = [
     title: '購物車',
     path: '/shoppingCart',
   },
-  {
-    title: '管理者登入',
-    path: '/login',
-  },
 ];
+
 const Navbar = () => {
+  const { isLogin } = useContext(LoginStatus);
   return (
     <nav
       className="navbar navbar-expand-lg bg-dark border-bottom border-body"
@@ -38,17 +38,25 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav w-100 mb-2 mb-lg-0">
             {navRoutes.map((route, index) => (
-              <li
-                className={`nav-item ${
-                  route.title === '管理者登入' ? 'ms-lg-auto' : ''
-                }`}
-                key={index}
-              >
+              <li className="nav-item" key={index}>
                 <NavLink className="nav-link" to={route.path}>
                   {route.title}
                 </NavLink>
               </li>
             ))}
+            {isLogin ? (
+              <li className="nav-item ms-lg-auto">
+                <NavLink className="adminNav nav-link" to="/admin">
+                  管理者頁面
+                </NavLink>
+              </li>
+            ) : (
+              <li className="nav-item ms-lg-auto">
+                <NavLink className="nav-link" to="/login">
+                  管理者登入
+                </NavLink>
+              </li>
+            )}
           </ul>
         </div>
       </div>

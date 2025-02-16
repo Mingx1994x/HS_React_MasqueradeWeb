@@ -1,14 +1,19 @@
-import { StrictMode } from 'react';
+// import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import './assets/all.scss';
 import { RouterProvider, createHashRouter } from 'react-router';
 import routes from './routes';
+import LoginStatusProvider from './context/LoginContext';
+
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import './assets/all.scss';
+
 const router = createHashRouter(routes);
-// import App from './AppW2.jsx'
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-  <RouterProvider router={router} />
+  <LoginStatusProvider>
+    <RouterProvider router={router} />
+  </LoginStatusProvider>
+
   // </StrictMode>
 );

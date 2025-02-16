@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { LoginStatus } from '../context/LoginContext';
 
 const { VITE_APP_BaseUrl } = import.meta.env;
 
@@ -9,6 +10,8 @@ const Login = () => {
     username: '',
     password: '',
   });
+
+  const { setIsLogin } = useContext(LoginStatus);
 
   const navigate = useNavigate();
 
@@ -24,8 +27,7 @@ const Login = () => {
         password: '',
       });
       axios.defaults.headers.common['Authorization'] = res.data.token;
-      // setIsLogin(true);
-      // getProductsData();
+      setIsLogin(true);
       navigate('/admin');
     } catch (error) {
       alert(error.response.data.error.message);
@@ -50,10 +52,10 @@ const Login = () => {
       (async () => {
         try {
           await axios.post(`${VITE_APP_BaseUrl}/api/user/check`);
+          setIsLogin(true);
           navigate('/admin');
         } catch (error) {
-          // console.log(error);
-          // alert('系統忙線中，請再重新登入或洽詢管理人員');
+          // alert('系統忙線中，請洽詢管理人員');
         }
       })();
     }
