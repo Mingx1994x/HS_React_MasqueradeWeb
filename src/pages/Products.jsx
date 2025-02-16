@@ -74,7 +74,7 @@ function Products() {
           qty,
         },
       });
-      // getCarts();
+      alert(res.data.message);
     } catch (error) {
       alert('系統出現問題，請洽管理人員');
     } finally {
