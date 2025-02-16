@@ -2,8 +2,12 @@ import { NavLink } from 'react-router';
 
 const navRoutes = [
   {
-    title: '首頁',
+    title: '商城',
     path: '/',
+  },
+  {
+    title: '購物車',
+    path: '/shoppingCart',
   },
   {
     title: '管理者登入',

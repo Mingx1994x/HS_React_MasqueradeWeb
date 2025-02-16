@@ -4,7 +4,7 @@ import AdminProducts from '../pages/AdminProducts';
 import Login from '../pages/LoginPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import Products from '../pages/Products';
-
+import Carts from '../pages/Carts';
 const routes = [
   {
     path: '/',
@@ -13,6 +13,10 @@ const routes = [
       {
         index: true,
         element: <Products />,
+      },
+      {
+        path: 'shoppingCart',
+        element: <Carts />,
       },
       {
         path: 'login',

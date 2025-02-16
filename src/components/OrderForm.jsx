@@ -1,5 +1,5 @@
-import axios from "axios";
-import { useForm } from "react-hook-form";
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
@@ -11,12 +11,12 @@ const OrderForm = ({ cartStatus, getCarts }) => {
     reset,
     formState: { errors },
   } = useForm({
-    mode: "onTouched",
+    mode: 'onTouched',
   });
 
   const submitOrder = async (orderInfo) => {
     if (!cartStatus) {
-      alert("尊敬的用戶，您的購物車尚未新增商品項目！");
+      alert('尊敬的用戶，您的購物車尚未新增商品項目！');
       return;
     }
     const { email, name, tel, address, message } = orderInfo;
@@ -52,15 +52,15 @@ const OrderForm = ({ cartStatus, getCarts }) => {
               </label>
               <input
                 type="email"
-                className={`form-control ${errors?.email ? "is-invalid" : ""}`}
+                className={`form-control ${errors?.email ? 'is-invalid' : ''}`}
                 id="customerEmail"
                 placeholder="請輸入信箱"
                 name="email"
-                {...register("email", {
-                  required: "信箱為必填欄位",
+                {...register('email', {
+                  required: '信箱為必填欄位',
                   pattern: {
                     value: /^\S+@\S+$/i,
-                    message: "信箱欄位填寫格式錯誤",
+                    message: '信箱欄位填寫格式錯誤',
                   },
                 })}
               />
@@ -74,12 +74,12 @@ const OrderForm = ({ cartStatus, getCarts }) => {
               </label>
               <input
                 type="text"
-                className={`form-control ${errors?.name ? "is-invalid" : ""}`}
+                className={`form-control ${errors?.name ? 'is-invalid' : ''}`}
                 id="customerName"
                 placeholder="請輸入姓名"
                 name="name"
-                {...register("name", {
-                  required: "姓名為必填欄位",
+                {...register('name', {
+                  required: '姓名為必填欄位',
                 })}
               />
               {errors?.name && (
@@ -92,15 +92,15 @@ const OrderForm = ({ cartStatus, getCarts }) => {
               </label>
               <input
                 type="tel"
-                className={`form-control ${errors?.tel ? "is-invalid" : ""}`}
+                className={`form-control ${errors?.tel ? 'is-invalid' : ''}`}
                 id="customerTel"
                 placeholder="請輸入手機號碼"
                 name="tel"
-                {...register("tel", {
-                  required: "手機為必填欄位",
+                {...register('tel', {
+                  required: '手機為必填欄位',
                   pattern: {
                     value: /^09\d{8}$/i,
-                    message: "手機欄位填寫格式錯誤",
+                    message: '手機欄位填寫格式錯誤',
                   },
                 })}
               />
@@ -115,13 +115,13 @@ const OrderForm = ({ cartStatus, getCarts }) => {
               <input
                 type="text"
                 className={`form-control ${
-                  errors?.address ? "is-invalid" : ""
+                  errors?.address ? 'is-invalid' : ''
                 }`}
                 id="customerAddress"
                 placeholder="請輸入寄送地址"
                 name="address"
-                {...register("address", {
-                  required: "地址為必填欄位",
+                {...register('address', {
+                  required: '地址為必填欄位',
                 })}
               />
               {errors?.address && (
@@ -134,16 +134,16 @@ const OrderForm = ({ cartStatus, getCarts }) => {
               </label>
               <textarea
                 className={`form-control ${
-                  errors?.message ? "is-invalid" : ""
+                  errors?.message ? 'is-invalid' : ''
                 }`}
                 id="customerMessage"
                 rows="3"
                 placeholder="留言區(留言請在30字以內)..."
                 name="message"
-                {...register("message", {
+                {...register('message', {
                   maxLength: {
                     value: 30,
-                    message: "留言超過字數限制",
+                    message: '留言超過字數限制',
                   },
                 })}
               ></textarea>
@@ -156,6 +156,7 @@ const OrderForm = ({ cartStatus, getCarts }) => {
                 type="submit"
                 value="送出預訂資料"
                 className="btn btn-dark"
+                disabled={!cartStatus}
               />
             </div>
           </form>
