@@ -5,7 +5,7 @@ import { Modal } from 'bootstrap';
 
 import ShoppingCart from '../components/ShoppingCart';
 import DeleteModal from '../components/DeleteModal';
-import OrderForm from '../components/orderForm';
+import OrderForm from '../components/OrderForm';
 import FullScreenLoading from '../components/FullScreenLoading';
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
