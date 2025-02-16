@@ -16,7 +16,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   const signin = async () => {
-    if (!account.username || !account.password) return;
+    if (!account.username || !account.password) {
+      alert('欄位請輸入信箱與密碼喲');
+      return;
+    }
     try {
       const res = await axios.post(`${VITE_APP_BaseUrl}/admin/signin`, account);
       document.cookie = `HexToken=${res.data.token}; expires=${new Date(
