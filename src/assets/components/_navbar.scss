@@ -1,0 +1,7 @@
+.navbar-nav {
+  .nav-link {
+    &.adminNav.active {
+      color: map-get($theme-colors, warning);
+    }
+  }
+}

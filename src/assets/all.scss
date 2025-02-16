@@ -1,9 +1,10 @@
-@import "bootstrap/scss/functions";
+@import 'bootstrap/scss/functions';
 
-@import "./helpers/variables";
+@import './helpers/variables';
 
-@import "bootstrap/scss/bootstrap";
+@import 'bootstrap/scss/bootstrap';
 
-@import "./pages/login";
-@import "./pages/singleProductCard";
-@import "./pages/productCartPage";
+@import './components/navbar';
+@import './pages/login';
+@import './pages/singleProductCard';
+@import './pages/productCartPage';
