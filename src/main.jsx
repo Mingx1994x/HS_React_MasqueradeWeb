@@ -14,6 +14,5 @@ createRoot(document.getElementById('root')).render(
   <LoginStatusProvider>
     <RouterProvider router={router} />
   </LoginStatusProvider>
-
   // </StrictMode>
 );
