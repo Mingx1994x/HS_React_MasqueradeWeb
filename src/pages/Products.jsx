@@ -6,6 +6,9 @@ import { Modal } from 'bootstrap';
 import ProductCard from '../components/ProductCard';
 import ProductCardModal from '../components/ProductCardModal';
 import FullScreenLoading from '../components/FullScreenLoading';
+import { useDispatch, useSelector } from 'react-redux';
+import SweetAlert from '../components/SweetAlert';
+import { activeSwalToast } from '../slice/sweetAlertSlice';
 
 const { VITE_APP_BaseUrl, VITE_APP_API } = import.meta.env;
 const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
@@ -31,6 +34,7 @@ function Products() {
   const [productsCategory, setProductsCategory] = useState([]);
   const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
 
+  const dispatch = useDispatch();
   //取得全部產品列表資料
   const getProductsAll = async () => {
     try {
@@ -74,7 +78,14 @@ function Products() {
           qty,
         },
       });
-      alert(res.data.message);
+      // alert(res.data.message);
+      console.log(res.data);
+      dispatch(
+        activeSwalToast({
+          status: 'success',
+          content: `${res.data.data.product.title}成功加入購物車`,
+        })
+      );
     } catch (error) {
       alert('系統出現問題，請洽管理人員');
     } finally {
@@ -89,6 +100,11 @@ function Products() {
       getProducts(selectState);
     }
   }, [selectState]);
+
+  // const sweetAlert = useSelector((state) => state.sweetAlert.toastState);
+  // useEffect(() => {
+  //   console.log(alert);
+  // }, [alert]);
 
   return (
     <>
@@ -120,6 +136,7 @@ function Products() {
         </ul>
       </section>
       {fullScreenLoadingState && <FullScreenLoading />}
+      <SweetAlert />
     </>
   );
 }

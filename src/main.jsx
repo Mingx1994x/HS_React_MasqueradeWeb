@@ -6,13 +6,17 @@ import LoginStatusProvider from './context/LoginContext';
 
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './assets/all.scss';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 const router = createHashRouter(routes);
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-  <LoginStatusProvider>
-    <RouterProvider router={router} />
-  </LoginStatusProvider>
+  <Provider store={store}>
+    <LoginStatusProvider>
+      <RouterProvider router={router} />
+    </LoginStatusProvider>
+  </Provider>
   // </StrictMode>
 );
