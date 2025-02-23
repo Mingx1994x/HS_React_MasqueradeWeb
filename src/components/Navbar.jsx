@@ -1,15 +1,19 @@
-import { NavLink } from 'react-router';
+import { Link, NavLink } from 'react-router';
 import { LoginStatus } from '../context/LoginContext';
 import { useContext } from 'react';
 
 const navRoutes = [
   {
     title: '商城',
-    path: '/',
+    path: '/products',
   },
   {
     title: '購物車',
     path: '/shoppingCart',
+  },
+  {
+    title: '關於我們',
+    path: '/aboutUs',
   },
 ];
 
@@ -21,9 +25,9 @@ const Navbar = () => {
       data-bs-theme="dark"
     >
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
+        <Link className="navbar-brand" to="/">
           Masquerade
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"

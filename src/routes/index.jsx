@@ -6,6 +6,8 @@ import NotFoundPage from '../pages/NotFoundPage';
 import Products from '../pages/Products';
 import Carts from '../pages/Carts';
 import ProductDetail from '../pages/ProductDetail';
+import HomePage from '../pages/HomePage';
+import AboutUs from '../pages/AboutUs';
 const routes = [
   {
     path: '/',
@@ -13,7 +15,15 @@ const routes = [
     children: [
       {
         index: true,
+        element: <HomePage />,
+      },
+      {
+        path: 'products',
         element: <Products />,
+      },
+      {
+        path: 'aboutUs',
+        element: <AboutUs />,
       },
       {
         path: ':id',

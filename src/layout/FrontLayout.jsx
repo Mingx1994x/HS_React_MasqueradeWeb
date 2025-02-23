@@ -1,7 +1,14 @@
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import Navbar from '../components/Navbar';
+import { useEffect } from 'react';
 
 export default function FrontLayout() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    console.log(pathname);
+
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return (
     <>
       <Navbar />
