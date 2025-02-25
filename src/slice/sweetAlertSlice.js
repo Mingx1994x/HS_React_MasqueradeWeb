@@ -3,11 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const sweetAlertSlice = createSlice({
   name: 'sweetAlertSlice',
   initialState: {
-    toastState: {
-      created_time: '',
-      status: 'success',
-      content: '成功加到購物車'
-    }
+    toastState: {}
   },
   reducers: {
     activeSwalToast: (state, action) => {

@@ -1,12 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
-import { Modal } from 'bootstrap';
 
 import ProductCard from '../components/ProductCard';
-import ProductCardModal from '../components/ProductCardModal';
 import FullScreenLoading from '../components/FullScreenLoading';
-import { useDispatch, useSelector } from 'react-redux';
 import SweetAlert from '../components/SweetAlert';
 import { activeSwalToast } from '../slice/sweetAlertSlice';
 
@@ -15,21 +12,6 @@ const customerUrl = `${VITE_APP_BaseUrl}/api/${VITE_APP_API}`;
 
 function Products() {
   const [products, setProducts] = useState([]);
-  let defaultData = {
-    category: '',
-    content: '',
-    description: '',
-    id: '',
-    is_enabled: '',
-    origin_price: '',
-    price: '',
-    title: '',
-    unit: '',
-    num: '',
-    imageUrl: '',
-    imagesUrl: [],
-  };
-  const [tempProduct, setTempProduct] = useState(defaultData);
   const [selectState, setSelectState] = useState('');
   const [productsCategory, setProductsCategory] = useState([]);
   const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
@@ -78,8 +60,6 @@ function Products() {
           qty,
         },
       });
-      // alert(res.data.message);
-      console.log(res.data);
       dispatch(
         activeSwalToast({
           status: 'success',
