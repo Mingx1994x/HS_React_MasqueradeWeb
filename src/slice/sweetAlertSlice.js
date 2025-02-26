@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const sweetAlertSlice = createSlice({
+const sweetAlertSlice = createSlice({
   name: 'sweetAlertSlice',
   initialState: {
     toastState: {}
@@ -10,7 +10,7 @@ export const sweetAlertSlice = createSlice({
       console.log(action);
       const { status, content } = action.payload
       state.toastState = {
-        created_time: Date.now(),
+        id: Date.now(),
         status,
         content
       }

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 
 import ProductCard from '../components/ProductCard';
@@ -15,7 +15,7 @@ function Products() {
   const [selectState, setSelectState] = useState('');
   const [productsCategory, setProductsCategory] = useState([]);
   const [fullScreenLoadingState, setFullScreenLoadingState] = useState(false);
-
+  const alertMessage = useSelector((state) => state.sweetAlert.toastState);
   const dispatch = useDispatch();
   //取得全部產品列表資料
   const getProductsAll = async () => {
@@ -81,11 +81,6 @@ function Products() {
     }
   }, [selectState]);
 
-  // const sweetAlert = useSelector((state) => state.sweetAlert.toastState);
-  // useEffect(() => {
-  //   console.log(alert);
-  // }, [alert]);
-
   return (
     <>
       <section className="section productDisplay">
@@ -116,7 +111,7 @@ function Products() {
         </ul>
       </section>
       {fullScreenLoadingState && <FullScreenLoading />}
-      <SweetAlert />
+      <SweetAlert alertMessage={alertMessage} />
     </>
   );
 }
