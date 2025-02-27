@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import FullScreenLoading from '../components/FullScreenLoading';
 import SectionLoading from '../components/SectionLoading';
 
@@ -13,6 +13,7 @@ const ProductDetail = () => {
   const [tempProduct, setTempProduct] = useState(null);
   const [tempQty, setTempQty] = useState(1);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const addCarts = async (product_id, qty = 1) => {
     setFullScreenLoadingState(true);
@@ -38,7 +39,7 @@ const ProductDetail = () => {
         const res = await axios.get(`${customerUrl}/product/${id}`);
         setTempProduct(res.data.product);
       } catch (error) {
-        console.log(error);
+        navigate('*');
       } finally {
         setSectionLoadingState(false);
       }
