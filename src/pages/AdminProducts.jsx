@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import { Modal, Toast } from 'bootstrap';
+import { Modal } from 'bootstrap';
 
 import Loading from '../components/LoadingPage';
 import DeleteModal from '../components/DeleteModal';
@@ -35,7 +35,9 @@ function AdminProducts() {
   const [tempData, setTempData] = useState(defaultData);
   const listNum = 9;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  //product
   const sortPage = (productQty, num) =>
     setTotalPages(Math.ceil(productQty / num));
   const getProductsData = async () => {
@@ -50,8 +52,8 @@ function AdminProducts() {
     } catch (error) {
       alert(
         error?.response.data.message
-          ? `${error?.response.data.message}\n煩請洽管理人員`
-          : '系統忙線中，請洽管理人員'
+          ? `${error?.response.data.message}`
+          : '載入中，請稍候...'
       );
     }
   };
@@ -62,59 +64,6 @@ function AdminProducts() {
       productsGroup.push([...products].splice(i, listNum));
     }
     return productsGroup[page - 1];
-  };
-
-  const initState = () => {
-    setProducts(null);
-    setTempData(defaultData);
-    setCurrentPage(1);
-    setPageState(null);
-  };
-  const navigate = useNavigate();
-  const logout = async () => {
-    try {
-      await axios.post(`${VITE_APP_BaseUrl}/logout`);
-      document.cookie = "HexToken='';";
-      initState();
-      setIsLogin(false);
-      navigate('/login');
-    } catch (error) {
-      alert(`${error.response.data.message}\n煩請洽管理人員`);
-    }
-  };
-
-  useEffect(() => {
-    if (!isLogin) {
-      alert('請先登入唷');
-      navigate('/login');
-    } else {
-      getProductsData();
-    }
-  }, []);
-
-  const productModalRef = useRef(null);
-  const deleteModalRef = useRef(null);
-
-  const [functionMode, setFunctionMode] = useState(null);
-  const openModal = (mode, productData, modalRef = productModalRef) => {
-    setFunctionMode(mode);
-    if (mode === 'create') {
-      setTempData(defaultData);
-    } else {
-      setTempData({
-        ...tempData,
-        ...productData,
-      });
-    }
-
-    const targetModal = Modal.getInstance(modalRef.current);
-    targetModal.show();
-  };
-
-  const closeDeleteModal = () => {
-    const deleteModal = Modal.getInstance(deleteModalRef.current);
-    deleteModal.hide();
-    setTempData(defaultData);
   };
 
   const deleteProduct = async (id) => {
@@ -143,6 +92,55 @@ function AdminProducts() {
     } finally {
       closeDeleteModal(deleteModalRef);
     }
+  };
+
+  const initState = () => {
+    setProducts(null);
+    setTempData(defaultData);
+    setCurrentPage(1);
+    setPageState(null);
+  };
+  const logout = async () => {
+    try {
+      await axios.post(`${VITE_APP_BaseUrl}/logout`);
+      initState();
+      setIsLogin(false);
+      navigate('/login');
+    } catch (error) {
+      alert(`${error.response.data.message}\n煩請洽管理人員`);
+    }
+  };
+
+  useEffect(() => {
+    if (isLogin) {
+      getProductsData();
+    }
+  }, [isLogin]);
+
+  //Modal
+  const productModalRef = useRef(null);
+  const deleteModalRef = useRef(null);
+
+  const [functionMode, setFunctionMode] = useState(null);
+  const openModal = (mode, productData, modalRef = productModalRef) => {
+    setFunctionMode(mode);
+    if (mode === 'create') {
+      setTempData(defaultData);
+    } else {
+      setTempData({
+        ...tempData,
+        ...productData,
+      });
+    }
+
+    const targetModal = Modal.getInstance(modalRef.current);
+    targetModal.show();
+  };
+
+  const closeDeleteModal = () => {
+    const deleteModal = Modal.getInstance(deleteModalRef.current);
+    deleteModal.hide();
+    setTempData(defaultData);
   };
 
   //pagination

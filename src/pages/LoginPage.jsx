@@ -11,8 +11,7 @@ const Login = () => {
     password: '',
   });
 
-  const { setIsLogin } = useContext(LoginStatus);
-
+  const { isLogin, setIsLogin } = useContext(LoginStatus);
   const navigate = useNavigate();
 
   const signin = async () => {
@@ -46,23 +45,10 @@ const Login = () => {
   };
 
   useEffect(() => {
-    let hexToken = document.cookie.replace(
-      /(?:(?:^|.*;\s*)HexToken\s*\=\s*([^;]*).*$)|^.*$/,
-      '$1'
-    );
-    if (hexToken) {
-      axios.defaults.headers.common['Authorization'] = hexToken;
-      (async () => {
-        try {
-          await axios.post(`${VITE_APP_BaseUrl}/api/user/check`);
-          setIsLogin(true);
-          navigate('/admin');
-        } catch (error) {
-          // alert('系統忙線中，請洽詢管理人員');
-        }
-      })();
+    if (isLogin) {
+      navigate('/admin');
     }
-  }, []);
+  }, [isLogin]);
 
   return (
     <div className="loginPhase">
