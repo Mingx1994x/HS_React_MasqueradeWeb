@@ -14,10 +14,9 @@ const BSToast = () => {
       if (messageEl) {
         bsToast.current = new Toast(messageEl);
         bsToast.current.show();
-        console.log(message.id);
         setTimeout(() => {
           dispatch(removeToastMessage(message.id));
-        }, 2000);
+        }, 3000);
       }
     });
   }, [toastMessages]);
@@ -53,6 +52,9 @@ const BSToast = () => {
                 className="btn-close"
                 data-bs-dismiss="toast"
                 aria-label="Close"
+                onClick={() => {
+                  dispatch(removeToastMessage(message.id));
+                }}
               ></button>
             </div>
             <div className="toast-body">{message.content}</div>

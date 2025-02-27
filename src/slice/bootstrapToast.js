@@ -19,8 +19,6 @@ const bootstrapToast = createSlice({
     },
     removeToastMessage: (state, action) => {
       const currentId = action.payload;
-      console.log(currentId);
-
       const removeIndex = state.messages.findIndex(message => message.id === currentId);
       if (removeIndex !== -1) state.messages.splice(removeIndex, 1);
     }
